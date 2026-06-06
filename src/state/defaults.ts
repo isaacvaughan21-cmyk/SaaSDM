@@ -20,6 +20,13 @@ export const PILLAR_LABELS: Record<PillarKey, string> = {
   viability: 'Viability',
 };
 
+// Colorblind-safe accent per pillar (Okabe-Ito). Used via inline styles.
+export const PILLAR_COLORS: Record<PillarKey, string> = {
+  desirability: '#0072B2', // blue
+  feasibility: '#E69F00', // orange
+  viability: '#009E73', // bluish green
+};
+
 export type CriterionMeta = {
   key: string;
   label: string;
@@ -41,7 +48,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
   desirability: [
     {
       key: 'problemSeverity',
-      label: 'Problem severity',
+      label: 'Problem Severity',
       weightPct: 40,
       description:
         'How painful and how frequent the underlying problem is. Big, recurring pain is the strongest signal of real demand.',
@@ -50,7 +57,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
     },
     {
       key: 'dogfoodingFit',
-      label: 'Dogfooding fit',
+      label: 'Dogfooding Fit',
       weightPct: 30,
       description:
         'Whether you are a user of your own product. Building something you personally need keeps you motivated and gives you instant feedback.',
@@ -59,7 +66,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
     },
     {
       key: 'wedgeClarity',
-      label: 'Market wedge clarity',
+      label: 'Market Wedge Clarity',
       weightPct: 30,
       description:
         'How clear and defensible your entry angle is. A sharp wedge into a proven market beats a vague idea in a crowded one.',
@@ -71,6 +78,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
     {
       key: 'timeToMvp',
       label: 'Time to MVP',
+      // (kept natural casing; "to" stays lowercase)
       weightPct: 40,
       description:
         'How long until you can put a usable first version in front of customers. Shorter loops mean faster learning and lower risk.',
@@ -78,7 +86,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
     },
     {
       key: 'skillMatch',
-      label: 'Skill match',
+      label: 'Skill Match',
       weightPct: 35,
       description:
         'How well the work fits the skills you already have. Building in your wheelhouse is faster and far less risky than learning everything new.',
@@ -87,7 +95,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
     },
     {
       key: 'opComplexity',
-      label: 'Operational complexity',
+      label: 'Operational Complexity',
       weightPct: 25,
       description:
         'How much ongoing maintenance, infrastructure, and third-party dependency the product demands. Lower complexity means more time building, less firefighting.',
@@ -107,7 +115,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
     },
     {
       key: 'distributionPath',
-      label: 'Distribution path',
+      label: 'Distribution Path',
       weightPct: 30,
       description:
         'How realistically you can reach customers. The best product fails without a channel; congregated, reachable audiences are gold.',
@@ -116,7 +124,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
     },
     {
       key: 'wtpClarity',
-      label: 'Willingness to pay clarity',
+      label: 'Willingness to Pay Clarity',
       weightPct: 30,
       description:
         'How confident you are that people will open their wallets. Proven spend on similar tools beats a vague "nice to have".',

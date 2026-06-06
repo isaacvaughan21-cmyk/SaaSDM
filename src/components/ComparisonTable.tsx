@@ -68,24 +68,32 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ idea, composite, pillars, flagged }) => {
-            const tint =
-              trafficLight(composite) === 'green'
-                ? 'bg-good-light/40'
-                : trafficLight(composite) === 'yellow'
-                  ? 'bg-mid-light/40'
-                  : 'bg-bad-light/40';
+          {rows.map(({ idea, composite, pillars, flagged }, rank) => {
+            const light = trafficLight(composite);
+            const rowColor =
+              light === 'green' ? '#0072B2' : light === 'yellow' ? '#E69F00' : '#D55E00';
+            const isBest = rank === 0 && rows.length > 1;
             return (
             <tr
               key={idea.id}
-              className={`border-b border-slate-100 last:border-0 ${tint} ${
-                flagged ? 'border-l-4 border-l-bad' : 'border-l-4 border-l-transparent'
-              }`}
+              className="border-b border-slate-100 last:border-0"
+              style={{
+                backgroundColor: `${rowColor}1f`, // ~12% tint
+                borderLeft: `5px solid ${flagged ? '#D55E00' : rowColor}`,
+              }}
             >
               <td className="px-3 py-2">
                 <span className="font-medium text-slate-800" title={idea.description}>
                   {idea.name}
                 </span>
+                {isBest && !flagged && (
+                  <span
+                    className="ml-2 align-middle text-[10px] font-bold uppercase tracking-wide text-white rounded px-1.5 py-0.5"
+                    style={{ backgroundColor: '#0072B2' }}
+                  >
+                    ★ Top pick
+                  </span>
+                )}
                 {idea.description && (
                   <span className="block text-xs text-slate-400 truncate max-w-xs">
                     {idea.description}

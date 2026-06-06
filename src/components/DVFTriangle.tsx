@@ -9,11 +9,12 @@ type Props = {
 export function DVFTriangle({ size = 320 }: Props) {
   // Intrinsic coordinate space — scaled via viewBox.
   const VB = 340;
-  const r = 84;
-  const dC = { x: 170, y: 120 }; // desirability (top)
-  const fC = { x: 108, y: 222 }; // feasibility (bottom-left)
-  const vC = { x: 232, y: 222 }; // viability (bottom-right)
-  const center = { x: 170, y: (dC.y + fC.y + vC.y) / 3 + 8 };
+  const r = 72;
+  const dC = { x: 170, y: 132 }; // desirability (top)
+  const fC = { x: 116, y: 224 }; // feasibility (bottom-left)
+  const vC = { x: 224, y: 224 }; // viability (bottom-right)
+  // bulb at the exact centroid of the three circle centres
+  const center = { x: (dC.x + fC.x + vC.x) / 3, y: (dC.y + fC.y + vC.y) / 3 };
 
   return (
     <div className="flex flex-col items-center">
