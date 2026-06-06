@@ -3,6 +3,7 @@ import type { Idea, PillarKey, Score, Weights } from '../state/types';
 import { CRITERIA, PILLAR_LABELS } from '../state/defaults';
 import { pillarScores, compositeScore, isFlagged, fmt, trafficLight } from '../state/scoring';
 import { ScoreSlider } from './ScoreSlider';
+import { LIGHT_STYLES } from './ScoreDot';
 import { uuid } from '../lib/uuid';
 
 type Props = {
@@ -66,8 +67,7 @@ export function IdeaModal({ initial, weights, onSave, onCancel }: Props) {
     });
   };
 
-  const dotColor = (s: number) =>
-    ({ green: 'text-green', yellow: 'text-yellow', red: 'text-red' })[trafficLight(s)];
+  const lightStyle = (s: number) => LIGHT_STYLES[trafficLight(s)];
 
   return (
     <div className="fixed inset-0 z-40 flex items-start justify-center bg-black/40 p-4 overflow-y-auto">
@@ -81,15 +81,21 @@ export function IdeaModal({ initial, weights, onSave, onCancel }: Props) {
             <span className="font-semibold">
               Composite: <span className="tabular-nums">{fmt(composite)}</span>
             </span>
-            {PILLARS.map((p) => (
-              <span key={p} className={dotColor(pillars[p])}>
-                {PILLAR_LABELS[p]}: <span className="tabular-nums">{fmt(pillars[p])}</span>
-              </span>
-            ))}
+            {PILLARS.map((p) => {
+              const st = lightStyle(pillars[p]);
+              return (
+                <span key={p} style={{ color: st.color }} className="font-medium">
+                  <span aria-hidden className="mr-1 text-[0.85em]">
+                    {st.shape}
+                  </span>
+                  {PILLAR_LABELS[p]}: <span className="tabular-nums">{fmt(pillars[p])}</span>
+                </span>
+              );
+            })}
           </div>
           {flagged && (
-            <div className="mt-2 text-xs font-medium text-red bg-red-light rounded px-2 py-1">
-              ⚠ A pillar scores below 2.0 — this idea is auto-flagged red.
+            <div className="mt-2 text-xs font-medium text-bad bg-bad-light rounded px-2 py-1">
+              ⚠ A pillar scores below 2.0 — this idea is auto-flagged as weak.
             </div>
           )}
         </div>
@@ -97,7 +103,7 @@ export function IdeaModal({ initial, weights, onSave, onCancel }: Props) {
         <div className="px-6 py-4 space-y-4">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Idea name <span className="text-red">*</span>
+              Idea name <span className="text-bad">*</span>
             </label>
             <input
               type="text"
@@ -131,7 +137,10 @@ export function IdeaModal({ initial, weights, onSave, onCancel }: Props) {
               >
                 <span>
                   {PILLAR_LABELS[pillar]}{' '}
-                  <span className={`text-sm ${dotColor(pillars[pillar])}`}>
+                  <span className="text-sm" style={{ color: lightStyle(pillars[pillar]).color }}>
+                    <span aria-hidden className="mr-0.5">
+                      {lightStyle(pillars[pillar]).shape}
+                    </span>
                     {fmt(pillars[pillar])}
                   </span>
                 </span>

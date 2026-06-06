@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Idea, Weights } from '../state/types';
 import { compositeScore, pillarScores, isFlagged, fmt } from '../state/scoring';
-import { ScoreDot } from './ScoreDot';
+import { ScoreDot, ScoreLegend } from './ScoreDot';
 
 type SortKey = 'composite' | 'desirability' | 'feasibility' | 'viability' | 'name';
 
@@ -51,6 +51,10 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
   );
 
   return (
+    <div>
+    <div className="mb-2 flex justify-end">
+      <ScoreLegend />
+    </div>
     <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
       <table className="w-full text-sm">
         <thead className="border-b border-slate-200 bg-slate-50 text-left">
@@ -68,7 +72,7 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
             <tr
               key={idea.id}
               className={`border-b border-slate-100 last:border-0 ${
-                flagged ? 'border-l-4 border-l-red bg-red-light/30' : ''
+                flagged ? 'border-l-4 border-l-bad bg-bad-light/30' : ''
               }`}
             >
               <td className="px-3 py-2">
@@ -84,7 +88,7 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
               <td className="px-3 py-2 text-center">
                 <span className="inline-flex items-center gap-1 font-semibold tabular-nums">
                   {flagged && (
-                    <span className="text-red" title="Pillar score below 2.0">
+                    <span className="text-bad" title="Pillar score below 2.0">
                       ⚠
                     </span>
                   )}
@@ -114,7 +118,7 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
                   Duplicate
                 </button>
                 <button
-                  className="text-red hover:underline"
+                  className="text-bad hover:underline"
                   onClick={() => {
                     if (confirm(`Delete "${idea.name}"? This cannot be undone.`)) {
                       onDelete(idea.id);
@@ -128,6 +132,7 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
           ))}
         </tbody>
       </table>
+    </div>
     </div>
   );
 }

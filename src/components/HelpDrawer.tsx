@@ -1,4 +1,6 @@
 import { RubricCards } from './RubricCards';
+import { DVFTriangle } from './DVFTriangle';
+import { LIGHT_STYLES } from './ScoreDot';
 
 export function HelpDrawer({ onClose }: { onClose: () => void }) {
   return (
@@ -17,7 +19,12 @@ export function HelpDrawer({ onClose }: { onClose: () => void }) {
               Each idea is scored across three equally-weighted pillars — Desirability, Feasibility,
               and Viability. Each pillar has three sub-criteria scored 1–5. The pillar score is the
               weighted average of its sub-criteria; the composite is the mean of the three pillars.
+              A strong idea sits in the overlap of all three.
             </p>
+          </section>
+
+          <section className="flex justify-center">
+            <DVFTriangle size={260} />
           </section>
 
           <section>
@@ -38,18 +45,28 @@ export function HelpDrawer({ onClose }: { onClose: () => void }) {
             <h3 className="font-semibold text-slate-800 mb-1">Traffic-light thresholds</h3>
             <ul className="space-y-1">
               <li>
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-green mr-2" />
-                Green — 3.5 and above
+                <span style={{ color: LIGHT_STYLES.green.color }} className="font-semibold mr-2">
+                  {LIGHT_STYLES.green.shape} {LIGHT_STYLES.green.label}
+                </span>
+                — 3.5 and above
               </li>
               <li>
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-yellow mr-2" />
-                Yellow — 2.0 to 3.49
+                <span style={{ color: LIGHT_STYLES.yellow.color }} className="font-semibold mr-2">
+                  {LIGHT_STYLES.yellow.shape} {LIGHT_STYLES.yellow.label}
+                </span>
+                — 2.0 to 3.49
               </li>
               <li>
-                <span className="inline-block w-2.5 h-2.5 rounded-full bg-red mr-2" />
-                Red — below 2.0
+                <span style={{ color: LIGHT_STYLES.red.color }} className="font-semibold mr-2">
+                  {LIGHT_STYLES.red.shape} {LIGHT_STYLES.red.label}
+                </span>
+                — below 2.0
               </li>
             </ul>
+            <p className="text-xs text-slate-400 mt-2">
+              Colours use a colourblind-safe palette and each level also has a distinct shape, so the
+              rating never relies on colour alone.
+            </p>
           </section>
 
           <section className="text-xs text-slate-400 border-t border-slate-100 pt-4">

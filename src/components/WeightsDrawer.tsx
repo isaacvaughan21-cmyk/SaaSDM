@@ -69,7 +69,7 @@ export function WeightsDrawer({ weights, onSave, onClose }: Props) {
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-slate-800">{PILLAR_LABELS[p]}</h3>
                   <span
-                    className={`text-xs font-semibold ${valid ? 'text-green' : 'text-red'}`}
+                    className={`text-xs font-semibold ${valid ? 'text-good' : 'text-bad'}`}
                   >
                     {t}%
                   </span>

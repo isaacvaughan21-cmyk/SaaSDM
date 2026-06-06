@@ -2,6 +2,8 @@ import type { Idea, Weights } from '../state/types';
 import { ComparisonTable } from './ComparisonTable';
 import { EmptyState } from './EmptyState';
 import { Crosshair } from './Crosshair';
+import { DVFTriangle } from './DVFTriangle';
+import { RubricCards } from './RubricCards';
 
 type Props = {
   ideas: Idea[];
@@ -54,6 +56,18 @@ export function Dashboard({ ideas, weights, onNew, onEdit, onDuplicate, onDelete
           dots={profitDots}
         />
       </div>
+
+      {/* Framework reference stays visible after the first idea */}
+      <section className="border-t border-slate-200 pt-8">
+        <div className="flex flex-col items-center">
+          <DVFTriangle />
+        </div>
+        <h2 className="text-lg font-bold text-slate-800 mt-8 mb-1">Scoring framework</h2>
+        <p className="text-sm text-slate-500 mb-4">
+          How each pillar and its sub-criteria are defined and scored.
+        </p>
+        <RubricCards />
+      </section>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { RubricCards } from './RubricCards';
 import { Crosshair } from './Crosshair';
+import { DVFTriangle } from './DVFTriangle';
 
 export function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
@@ -16,6 +17,10 @@ export function EmptyState({ onAdd }: { onAdd: () => void }) {
       >
         + Add your first idea
       </button>
+
+      <div className="mt-10 flex justify-center">
+        <DVFTriangle />
+      </div>
 
       <div className="mt-10 text-left">
         <RubricCards />
