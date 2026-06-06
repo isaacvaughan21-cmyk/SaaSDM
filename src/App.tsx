@@ -1,9 +1,10 @@
-import { useEffect, useReducer, useRef, useState } from 'react';
-import type { AppState, Idea, Weights } from './state/types';
+import { useEffect, useReducer, useState } from 'react';
+import type { Idea, Weights } from './state/types';
 import { reducer } from './state/reducer';
 import { loadState, saveState } from './state/storage';
 import { uuid } from './lib/uuid';
 import { Header } from './components/Header';
+import { Hero } from './components/Hero';
 import { Dashboard } from './components/Dashboard';
 import { IdeaModal } from './components/IdeaModal';
 import { WeightsDrawer } from './components/WeightsDrawer';
@@ -18,7 +19,6 @@ export default function App() {
   const [weightsOpen, setWeightsOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
-  const fileInput = useRef<HTMLInputElement>(null);
 
   // persist on every change (debounced)
   useEffect(() => {
@@ -61,62 +61,26 @@ export default function App() {
     showToast('Weights saved — scores recomputed.');
   };
 
-  const exportJson = () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const date = new Date().toISOString().slice(0, 10);
-    a.href = url;
-    a.download = `saas-ideas-${date}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const importJson = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const parsed = JSON.parse(String(reader.result)) as AppState;
-        if (parsed.schemaVersion !== 1) {
-          showToast('Import failed — unsupported file version.');
-          return;
-        }
-        if (
-          state.ideas.length > 0 &&
-          !confirm('This will replace your current ideas. Continue?')
-        ) {
-          return;
-        }
-        dispatch({ type: 'import', state: parsed });
-        showToast('Import successful.');
-      } catch {
-        showToast('Import failed — invalid JSON.');
-      }
-    };
-    reader.readAsText(file);
+  const doExportPdf = async () => {
+    if (state.ideas.length === 0) return;
+    const { exportPdf } = await import('./lib/exportPdf');
+    exportPdf(state);
+    showToast('PDF report downloaded.');
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
+    <div className="max-w-5xl mx-auto px-4 pb-10">
       <Header
         onHelp={() => setHelpOpen(true)}
         onWeights={() => setWeightsOpen(true)}
-        onExport={exportJson}
-        onImport={() => fileInput.current?.click()}
+        onExportPdf={doExportPdf}
         onNew={openNew}
+        canExport={state.ideas.length > 0}
       />
 
-      <input
-        ref={fileInput}
-        type="file"
-        accept="application/json"
-        className="hidden"
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) importJson(f);
-          e.target.value = '';
-        }}
-      />
+      <div className="mb-8">
+        <Hero onNew={openNew} onHelp={() => setHelpOpen(true)} ideaCount={state.ideas.length} />
+      </div>
 
       <Dashboard
         ideas={state.ideas}

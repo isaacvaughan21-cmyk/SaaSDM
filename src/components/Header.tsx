@@ -1,15 +1,20 @@
 type Props = {
   onHelp: () => void;
   onWeights: () => void;
-  onExport: () => void;
-  onImport: () => void;
+  onExportPdf: () => void;
   onNew: () => void;
+  canExport: boolean;
 };
 
-export function Header({ onHelp, onWeights, onExport, onImport, onNew }: Props) {
+export function Header({ onHelp, onWeights, onExportPdf, onNew, canExport }: Props) {
   return (
-    <header className="flex items-center justify-between flex-wrap gap-3 mb-6">
-      <h1 className="text-xl font-bold text-slate-900">SaaS Decision Matrix</h1>
+    <header className="flex items-center justify-between flex-wrap gap-3 py-3">
+      <div className="flex items-center gap-2">
+        <span className="text-2xl" aria-hidden>
+          💡
+        </span>
+        <h1 className="text-lg font-bold text-slate-900">SaaS Decision Matrix</h1>
+      </div>
       <div className="flex items-center gap-2">
         <button
           onClick={onHelp}
@@ -25,16 +30,12 @@ export function Header({ onHelp, onWeights, onExport, onImport, onNew }: Props) 
           ⚙ Weights
         </button>
         <button
-          onClick={onExport}
-          className="px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-600 hover:bg-slate-100"
+          onClick={onExportPdf}
+          disabled={!canExport}
+          className="px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-600 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed"
+          title={canExport ? 'Export a PDF report' : 'Add an idea first'}
         >
-          Export JSON
-        </button>
-        <button
-          onClick={onImport}
-          className="px-3 py-2 rounded-lg border border-slate-300 text-sm text-slate-600 hover:bg-slate-100"
-        >
-          Import JSON
+          Export PDF
         </button>
         <button
           onClick={onNew}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Idea, Weights } from '../state/types';
-import { compositeScore, pillarScores, isFlagged, fmt } from '../state/scoring';
+import { compositeScore, pillarScores, isFlagged, fmt, trafficLight } from '../state/scoring';
 import { ScoreDot, ScoreLegend } from './ScoreDot';
 
 type SortKey = 'composite' | 'desirability' | 'feasibility' | 'viability' | 'name';
@@ -68,11 +68,18 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ idea, composite, pillars, flagged }) => (
+          {rows.map(({ idea, composite, pillars, flagged }) => {
+            const tint =
+              trafficLight(composite) === 'green'
+                ? 'bg-good-light/40'
+                : trafficLight(composite) === 'yellow'
+                  ? 'bg-mid-light/40'
+                  : 'bg-bad-light/40';
+            return (
             <tr
               key={idea.id}
-              className={`border-b border-slate-100 last:border-0 ${
-                flagged ? 'border-l-4 border-l-bad bg-bad-light/30' : ''
+              className={`border-b border-slate-100 last:border-0 ${tint} ${
+                flagged ? 'border-l-4 border-l-bad' : 'border-l-4 border-l-transparent'
               }`}
             >
               <td className="px-3 py-2">
@@ -129,7 +136,8 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
                 </button>
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>

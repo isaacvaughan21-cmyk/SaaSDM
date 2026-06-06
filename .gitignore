@@ -6,3 +6,6 @@ dist/
 .DS_Store
 Thumbs.db
 .claude/settings.local.json
+
+# launch config is local-only
+.claude/launch.json
