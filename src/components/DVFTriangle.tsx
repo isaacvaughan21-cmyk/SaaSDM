@@ -9,16 +9,18 @@ type Props = {
 export function DVFTriangle({ size = 320 }: Props) {
   // Intrinsic coordinate space — scaled via viewBox.
   const VB = 340;
-  const r = 72;
-  const dC = { x: 170, y: 132 }; // desirability (top)
-  const fC = { x: 116, y: 224 }; // feasibility (bottom-left)
-  const vC = { x: 224, y: 224 }; // viability (bottom-right)
+  const r = 74;
+  // Centres pulled in toward the middle so the 3-way overlap is large enough
+  // to seat the lightbulb fully.
+  const dC = { x: 170, y: 150 }; // desirability (top)
+  const fC = { x: 132, y: 214 }; // feasibility (bottom-left)
+  const vC = { x: 208, y: 214 }; // viability (bottom-right)
   // bulb at the exact centroid of the three circle centres
   const center = { x: (dC.x + fC.x + vC.x) / 3, y: (dC.y + fC.y + vC.y) / 3 };
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="text-sm font-semibold text-slate-700 mb-2">The DVF framework</h3>
+      <h3 className="text-sm font-semibold text-ink mb-2">The DVF framework</h3>
       <svg width={size} height={size} viewBox={`0 0 ${VB} ${VB}`} className="overflow-visible">
         <defs>
           <filter id="bulbGlow" x="-80%" y="-80%" width="260%" height="260%">
@@ -53,7 +55,7 @@ export function DVFTriangle({ size = 320 }: Props) {
         <text x={dC.x} y={dC.y - r - 14} textAnchor="middle" fontSize="14" fontWeight="700" fill="#0072B2">
           Desirability
         </text>
-        <text x={dC.x} y={dC.y - r - 1} textAnchor="middle" fontSize="9.5" className="fill-slate-500">
+        <text x={dC.x} y={dC.y - r - 1} textAnchor="middle" fontSize="9.5" className="fill-muted">
           people want it
         </text>
 
@@ -61,7 +63,7 @@ export function DVFTriangle({ size = 320 }: Props) {
         <text x={fC.x - 6} y={VB - 20} textAnchor="middle" fontSize="14" fontWeight="700" fill="#B8780A">
           Feasibility
         </text>
-        <text x={fC.x - 6} y={VB - 7} textAnchor="middle" fontSize="9.5" className="fill-slate-500">
+        <text x={fC.x - 6} y={VB - 7} textAnchor="middle" fontSize="9.5" className="fill-muted">
           you can build it
         </text>
 
@@ -69,11 +71,11 @@ export function DVFTriangle({ size = 320 }: Props) {
         <text x={vC.x + 6} y={VB - 20} textAnchor="middle" fontSize="14" fontWeight="700" fill="#009E73">
           Viability
         </text>
-        <text x={vC.x + 6} y={VB - 7} textAnchor="middle" fontSize="9.5" className="fill-slate-500">
+        <text x={vC.x + 6} y={VB - 7} textAnchor="middle" fontSize="9.5" className="fill-muted">
           it can make money
         </text>
       </svg>
-      <p className="mt-2 text-xs text-slate-500 max-w-xs text-center">
+      <p className="mt-2 text-xs text-muted max-w-xs text-center">
         A winning idea lights up the middle — where all three pillars overlap. This tool scores each
         pillar so you can see which ones an idea is missing.
       </p>

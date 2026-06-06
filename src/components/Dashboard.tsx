@@ -58,12 +58,12 @@ export function Dashboard({ ideas, weights, onNew, onEdit, onDuplicate, onDelete
       </div>
 
       {/* Framework reference stays visible after the first idea */}
-      <section className="border-t border-slate-200 pt-8">
+      <section className="border-t border-line pt-8">
         <div className="flex flex-col items-center">
           <DVFTriangle />
         </div>
-        <h2 className="text-lg font-bold text-slate-800 mt-8 mb-1">Scoring framework</h2>
-        <p className="text-sm text-slate-500 mb-4">
+        <h2 className="font-display text-2xl font-semibold text-ink mt-8 mb-1">Scoring framework</h2>
+        <p className="text-sm text-muted mb-4">
           How each pillar and its sub-criteria are defined and scored.
         </p>
         <RubricCards />

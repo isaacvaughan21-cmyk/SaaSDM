@@ -6,36 +6,41 @@ type Props = {
 
 export function Hero({ onNew, onHelp, ideaCount }: Props) {
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 text-white px-8 py-12 md:py-16 text-center shadow-lg">
-      {/* decorative glow */}
-      <div className="pointer-events-none absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-2xl" />
-      <div className="pointer-events-none absolute -bottom-20 -left-10 w-72 h-72 rounded-full bg-violet-400/20 blur-3xl" />
+    <section className="relative border-y border-line py-14 md:py-20">
+      <div className="max-w-3xl">
+        <p className="kicker text-muted">A decision tool for solo founders</p>
 
-      <div className="relative max-w-2xl mx-auto">
-        <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider bg-white/15 rounded-full px-3 py-1">
-          💡 Desirability · Feasibility · Viability
-        </span>
-        <h2 className="mt-4 text-3xl md:text-5xl font-extrabold leading-tight">
-          Stop guessing. <span className="text-indigo-200">Score</span> your next SaaS idea.
+        <h2 className="font-display mt-5 text-[2.6rem] md:text-6xl leading-[1.02] tracking-[-0.02em] text-ink">
+          Stop guessing which
+          <br className="hidden md:block" /> idea to{' '}
+          <em className="italic font-medium">actually</em> build.
         </h2>
-        <p className="mt-4 text-indigo-100 text-base md:text-lg">
-          Replace gut-feel with a repeatable rubric. Rank every idea across nine weighted criteria,
-          auto-flag fatal weaknesses, and see at a glance which one is worth building.
+
+        <p className="mt-6 text-lg md:text-xl text-muted max-w-2xl leading-relaxed">
+          Score every SaaS idea across nine weighted criteria — Desirability, Feasibility, and
+          Viability. The matrix ranks them, flags fatal weaknesses, and shows you, in one glance,
+          the one worth your next six months.
         </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-3">
+
+        <div className="mt-9 flex flex-wrap items-center gap-3">
           <button
             onClick={onNew}
-            className="px-6 py-3 rounded-xl bg-white text-indigo-700 font-bold hover:bg-indigo-50 shadow-md transition"
+            className="group inline-flex items-center gap-2 rounded-md bg-ink px-6 py-3 text-paper font-semibold hover:bg-ink-700 transition-colors"
           >
-            {ideaCount === 0 ? '＋ Score your first idea' : '＋ Score another idea'}
+            {ideaCount === 0 ? 'Score your first idea' : 'Score another idea'}
+            <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </button>
           <button
             onClick={onHelp}
-            className="px-6 py-3 rounded-xl bg-white/10 border border-white/30 text-white font-semibold hover:bg-white/20 transition"
+            className="inline-flex items-center rounded-md border border-line bg-surface px-6 py-3 text-ink font-medium hover:border-muted transition-colors"
           >
-            See how it works
+            How scoring works
           </button>
         </div>
+
+        <p className="mt-8 kicker text-muted">
+          Desirability &nbsp;·&nbsp; Feasibility &nbsp;·&nbsp; Viability
+        </p>
       </div>
     </section>
   );

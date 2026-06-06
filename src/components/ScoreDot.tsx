@@ -35,7 +35,7 @@ export function ScoreLegend() {
     red: '< 2.0',
   };
   return (
-    <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+    <div className="flex flex-wrap items-center gap-4 text-xs text-muted">
       {order.map((l) => {
         const s = LIGHT_STYLES[l];
         return (
@@ -46,7 +46,7 @@ export function ScoreLegend() {
             <span style={{ color: s.color }} className="font-semibold">
               {s.label}
             </span>
-            <span className="text-slate-400">{ranges[l]}</span>
+            <span className="text-muted">{ranges[l]}</span>
           </span>
         );
       })}

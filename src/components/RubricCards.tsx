@@ -11,7 +11,7 @@ export function RubricCards() {
         return (
           <div
             key={pillar}
-            className="rounded-lg border border-slate-200 bg-white overflow-hidden shadow-sm"
+            className="rounded-xl border border-line bg-surface overflow-hidden shadow-card"
           >
             {/* Pillar header band — clearly separated from the sub-criteria */}
             <div className="px-4 py-3 text-white" style={{ backgroundColor: color }}>
@@ -27,20 +27,20 @@ export function RubricCards() {
             </div>
 
             {/* Sub-criteria */}
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-line">
               {CRITERIA[pillar].map((c) => (
                 <li key={c.key} className="px-4 py-3 text-sm">
                   <div className="flex items-center gap-2">
                     <span className="font-semibold" style={{ color }}>
                       {c.label}
                     </span>
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-line text-muted">
                       {c.weightPct}%
                     </span>
                   </div>
-                  <p className="text-xs text-slate-600 leading-snug mt-1">{c.description}</p>
-                  <p className="text-[11px] text-slate-400 leading-snug mt-1">
-                    <span className="font-semibold text-slate-500">Scoring:</span> {c.anchors}
+                  <p className="text-xs text-muted leading-snug mt-1">{c.description}</p>
+                  <p className="text-[11px] text-muted leading-snug mt-1">
+                    <span className="font-semibold text-muted">Scoring:</span> {c.anchors}
                   </p>
                 </li>
               ))}

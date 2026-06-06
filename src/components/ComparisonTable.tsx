@@ -42,7 +42,7 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
 
   const header = (key: SortKey, label: string, extra = '') => (
     <th
-      className={`px-3 py-2 font-semibold text-slate-600 cursor-pointer select-none hover:text-slate-900 ${extra}`}
+      className={`px-3 py-2 font-semibold text-muted cursor-pointer select-none hover:text-ink ${extra}`}
       onClick={() => setSort(key)}
     >
       {label}
@@ -55,16 +55,16 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
     <div className="mb-2 flex justify-end">
       <ScoreLegend />
     </div>
-    <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+    <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-card">
       <table className="w-full text-sm">
-        <thead className="border-b border-slate-200 bg-slate-50 text-left">
-          <tr>
+        <thead className="border-b border-line bg-wash text-left">
+          <tr className="kicker text-muted">
             {header('name', 'Idea')}
             {header('composite', 'Composite', 'text-center')}
             {header('desirability', 'Desirability', 'text-center')}
             {header('feasibility', 'Feasibility', 'text-center')}
             {header('viability', 'Viability', 'text-center')}
-            <th className="px-3 py-2 font-semibold text-slate-600 text-right">Actions</th>
+            <th className="px-3 py-3 text-right">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -76,14 +76,14 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
             return (
             <tr
               key={idea.id}
-              className="border-b border-slate-100 last:border-0"
+              className="border-b border-line last:border-0"
               style={{
                 backgroundColor: `${rowColor}1f`, // ~12% tint
                 borderLeft: `5px solid ${flagged ? '#D55E00' : rowColor}`,
               }}
             >
               <td className="px-3 py-2">
-                <span className="font-medium text-slate-800" title={idea.description}>
+                <span className="font-medium text-ink" title={idea.description}>
                   {idea.name}
                 </span>
                 {isBest && !flagged && (
@@ -95,7 +95,7 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
                   </span>
                 )}
                 {idea.description && (
-                  <span className="block text-xs text-slate-400 truncate max-w-xs">
+                  <span className="block text-xs text-muted truncate max-w-xs">
                     {idea.description}
                   </span>
                 )}
@@ -121,13 +121,13 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
               </td>
               <td className="px-3 py-2 text-right whitespace-nowrap">
                 <button
-                  className="text-indigo-600 hover:underline mr-3"
+                  className="text-ink underline-offset-2 hover:underline mr-3"
                   onClick={() => onEdit(idea)}
                 >
                   Edit
                 </button>
                 <button
-                  className="text-slate-500 hover:underline mr-3"
+                  className="text-muted hover:underline mr-3"
                   onClick={() => onDuplicate(idea.id)}
                 >
                   Duplicate
