@@ -30,7 +30,7 @@ export function Hero({ onNew, ideaCount }: Props) {
             onClick={onNew}
             className="group inline-flex items-center gap-2 rounded-md bg-ink px-6 py-3 text-paper font-semibold hover:bg-ink-700 transition-colors"
           >
-            {ideaCount === 0 ? 'Score your first idea' : 'Score another idea'}
+            {ideaCount === 0 ? 'Score your first idea' : 'Score a new idea'}
             <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </button>
           <button
