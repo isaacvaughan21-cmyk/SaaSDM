@@ -1,6 +1,5 @@
 import { useState } from 'react';
-
-type FeedbackType = 'feature' | 'bug';
+import { addFeedback, type FeedbackType } from '../lib/supabase';
 
 type Props = {
   onClose: () => void;
@@ -12,16 +11,32 @@ const FEEDBACK_EMAIL = 'isaacvaughan21@gmail.com';
 export function FeedbackDrawer({ onClose, onSent }: Props) {
   const [type, setType] = useState<FeedbackType>('feature');
   const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
 
-  const send = () => {
-    const subject =
-      type === 'feature' ? '[Idea Matrix] Feature request' : '[Idea Matrix] Bug report';
-    const body = encodeURIComponent(message.trim());
-    window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(
-      subject
-    )}&body=${body}`;
-    onSent();
-    onClose();
+  const send = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!message.trim() || busy) return;
+    setBusy(true);
+    setError('');
+    const result = await addFeedback(type, message);
+    setBusy(false);
+
+    if (result === 'ok') {
+      onSent();
+      onClose();
+    } else if (result === 'unconfigured') {
+      // Backend not wired yet — fall back to an email.
+      const subject =
+        type === 'feature' ? '[Idea Matrix] Feature request' : '[Idea Matrix] Bug report';
+      window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(message.trim())}`;
+      onSent();
+      onClose();
+    } else {
+      setError('Something went wrong — please try again.');
+    }
   };
 
   const TypeButton = ({ value, label, hint }: { value: FeedbackType; label: string; hint: string }) => {
@@ -53,7 +68,7 @@ export function FeedbackDrawer({ onClose, onSent }: Props) {
           </button>
         </div>
 
-        <div className="px-6 py-5 space-y-5">
+        <form onSubmit={send} className="px-6 py-5 space-y-5">
           <p className="text-sm text-muted">
             Have an idea to make this better, or hit something broken? Let me know.
           </p>
@@ -84,16 +99,15 @@ export function FeedbackDrawer({ onClose, onSent }: Props) {
           </div>
 
           <button
-            onClick={send}
-            disabled={!message.trim()}
+            type="submit"
+            disabled={!message.trim() || busy}
             className="w-full px-4 py-2.5 rounded-md bg-ink text-paper text-sm font-semibold hover:bg-ink-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
-            Send feedback
+            {busy ? 'Sending…' : 'Send feedback'}
           </button>
-          <p className="text-xs text-muted text-center">
-            Opens your email app addressed to the maker.
-          </p>
-        </div>
+          {error && <p className="text-sm text-bad text-center">{error}</p>}
+          <p className="text-xs text-muted text-center">Sent straight to the maker — no email needed.</p>
+        </form>
       </div>
     </div>
   );

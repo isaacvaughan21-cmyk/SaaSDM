@@ -1,26 +1,39 @@
 import { useState } from 'react';
 import profilePic from '../assets/profilepic.png';
+import { addSubscriber } from '../lib/supabase';
 
-// Where list signups are delivered. Swap this mailto flow for a hosted
-// provider (Buttondown / ConvertKit / Formspree) by pointing `submit` at their
-// form endpoint when you have an account.
+// Fallback inbox used only if the Supabase backend isn't configured yet.
 const LIST_EMAIL = 'isaacvaughan21@gmail.com';
 
 export function FounderNote() {
   const [email, setEmail] = useState('');
   const [joined, setJoined] = useState(false);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
   const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!valid) return;
-    const subject = 'Join the email list — The Idea Matrix';
-    const body = `Please add me to the list: ${email.trim()}`;
-    window.location.href = `mailto:${LIST_EMAIL}?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
-    setJoined(true);
+    if (!valid || busy) return;
+    setBusy(true);
+    setError('');
+    const result = await addSubscriber(email);
+    setBusy(false);
+
+    if (result === 'ok' || result === 'exists') {
+      setJoined(true);
+    } else if (result === 'unconfigured') {
+      // Backend not wired yet — fall back to an email so nothing is lost.
+      const subject = 'Join the email list — The Idea Matrix';
+      const body = `Please add me to the list: ${email.trim()}`;
+      window.location.href = `mailto:${LIST_EMAIL}?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
+      setJoined(true);
+    } else {
+      setError('Something went wrong — please try again.');
+    }
   };
 
   return (
@@ -69,9 +82,7 @@ export function FounderNote() {
           </p>
 
           {joined ? (
-            <p className="mt-5 text-ink font-medium">
-              Thanks — you're on the list. Check your email client to send the confirmation. ✓
-            </p>
+            <p className="mt-5 text-ink font-medium">You're on the list — thanks for joining. ✓</p>
           ) : (
             <form onSubmit={submit} className="mt-5 flex flex-col sm:flex-row gap-3">
               <input
@@ -84,13 +95,14 @@ export function FounderNote() {
               />
               <button
                 type="submit"
-                disabled={!valid}
+                disabled={!valid || busy}
                 className="rounded-md bg-ink px-6 py-3 text-paper text-sm font-semibold hover:bg-ink-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
               >
-                Join the list
+                {busy ? 'Joining…' : 'Join the list'}
               </button>
             </form>
           )}
+          {error && <p className="mt-2 text-sm text-bad">{error}</p>}
         </div>
       </div>
     </section>

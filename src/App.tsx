@@ -110,7 +110,7 @@ export default function App() {
       {feedbackOpen && (
         <FeedbackDrawer
           onClose={() => setFeedbackOpen(false)}
-          onSent={() => showToast('Thanks — opening your email app.')}
+          onSent={() => showToast('Thanks — your feedback was sent.')}
         />
       )}
 
