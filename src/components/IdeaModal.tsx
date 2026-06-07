@@ -153,6 +153,7 @@ export function IdeaModal({ initial, weights, onSave, onCancel }: Props) {
                       key={c.key}
                       label={c.label}
                       weightPct={(weights[pillar] as Record<string, number>)[c.key]}
+                      description={c.description}
                       anchors={c.anchors}
                       value={(scores[pillar] as Record<string, number>)[c.key]}
                       onChange={(v) => setScore(pillar, c.key, v)}

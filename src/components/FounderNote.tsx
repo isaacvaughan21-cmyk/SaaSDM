@@ -57,7 +57,6 @@ export function FounderNote() {
             workflows and frameworks I find genuinely useful, and I'd love your feedback along the
             way.
           </p>
-          <p className="font-display text-lg text-ink">— Isaac</p>
         </div>
 
         {/* Email list signup */}
