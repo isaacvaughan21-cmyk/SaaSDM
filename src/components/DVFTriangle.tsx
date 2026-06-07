@@ -66,17 +66,18 @@ export function DVFTriangle({ size = 320 }: Props) {
           People want it.
         </text>
 
-        <text x={fC.x} y={H - 14} textAnchor="middle" fontSize="14" fontWeight="700" fill={fCol}>
+        {/* bottom labels pushed outward from centre for separation */}
+        <text x={fC.x - 22} y={H - 14} textAnchor="middle" fontSize="14" fontWeight="700" fill={fCol}>
           Feasibility
         </text>
-        <text x={fC.x} y={H - 2} textAnchor="middle" fontSize="9.5" fill={MUTED}>
+        <text x={fC.x - 22} y={H - 2} textAnchor="middle" fontSize="9.5" fill={MUTED}>
           You can build it.
         </text>
 
-        <text x={vC.x} y={H - 14} textAnchor="middle" fontSize="14" fontWeight="700" fill={vCol}>
+        <text x={vC.x + 22} y={H - 14} textAnchor="middle" fontSize="14" fontWeight="700" fill={vCol}>
           Viability
         </text>
-        <text x={vC.x} y={H - 2} textAnchor="middle" fontSize="9.5" fill={MUTED}>
+        <text x={vC.x + 22} y={H - 2} textAnchor="middle" fontSize="9.5" fill={MUTED}>
           It can make money.
         </text>
       </svg>

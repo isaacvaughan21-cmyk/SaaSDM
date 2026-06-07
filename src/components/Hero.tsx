@@ -19,9 +19,10 @@ export function Hero({ onNew, ideaCount }: Props) {
         </h2>
 
         <p className="mt-6 text-lg md:text-xl text-muted max-w-2xl leading-relaxed">
-          Score every SaaS idea across nine weighted criteria — Desirability, Feasibility, and
-          Viability. The matrix ranks them, flags fatal weaknesses, and shows you, in one glance,
-          the one worth your next six months.
+          Take the ideas you're weighing right now and score each one across nine weighted criteria
+          under three pillars — Desirability, Feasibility, and Viability. The matrix ranks your
+          shortlist, flags the fatal weaknesses, and shows you at a glance which one is worth your
+          time.
         </p>
 
         <div className="mt-9 flex flex-wrap items-center gap-3">
