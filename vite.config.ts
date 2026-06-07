@@ -3,8 +3,9 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-// On GitHub Pages the site is served under /SaaSDM/; locally it stays at /.
+// Relative base so the build works at both the project-pages subpath
+// (…github.io/SaaSDM/) and the custom domain root (theideamatrix.com).
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/SaaSDM/' : '/',
+  base: command === 'build' ? './' : '/',
   plugins: [react(), tailwindcss()],
 }))
