@@ -65,8 +65,8 @@ export function FounderNote() {
           <h3 className="font-display text-2xl font-semibold text-ink">Want to build alongside me?</h3>
           <p className="mt-2 text-muted leading-relaxed">
             Join the email list to get every new feature the moment it ships. No spam — and
-            everything stays 100% free until I hit <span className="font-semibold text-ink">$1,000 MRR</span>{' '}
-            on whichever SaaS I pursue.
+            everything stays 100% free until my first SaaS hits{' '}
+            <span className="font-semibold text-ink">$1,000 MRR</span>.
           </p>
 
           {joined ? (
