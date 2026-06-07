@@ -9,11 +9,10 @@ type Props = {
   weights: Weights;
   onNew: () => void;
   onEdit: (idea: Idea) => void;
-  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
 };
 
-export function Dashboard({ ideas, weights, onNew, onEdit, onDuplicate, onDelete }: Props) {
+export function Dashboard({ ideas, weights, onNew, onEdit, onDelete }: Props) {
   if (ideas.length === 0) {
     return <EmptyState onAdd={onNew} />;
   }
@@ -24,7 +23,6 @@ export function Dashboard({ ideas, weights, onNew, onEdit, onDuplicate, onDelete
         ideas={ideas}
         weights={weights}
         onEdit={onEdit}
-        onDuplicate={onDuplicate}
         onDelete={onDelete}
       />
 

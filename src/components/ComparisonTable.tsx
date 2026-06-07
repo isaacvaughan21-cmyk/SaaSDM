@@ -9,11 +9,10 @@ type Props = {
   ideas: Idea[];
   weights: Weights;
   onEdit: (idea: Idea) => void;
-  onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
 };
 
-export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete }: Props) {
+export function ComparisonTable({ ideas, weights, onEdit, onDelete }: Props) {
   const [sortKey, setSortKey] = useState<SortKey>('composite');
   const [asc, setAsc] = useState(false);
 
@@ -52,7 +51,11 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
 
   return (
     <div>
-    <div className="mb-2 flex justify-end">
+    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+      <p className="text-xs text-muted">
+        Ranked by composite score — darker rows score higher. Each pillar dot shows its strength;
+        click a column to re-sort.
+      </p>
       <ScoreLegend />
     </div>
     <div className="overflow-x-auto rounded-xl border border-line bg-surface shadow-card">
@@ -124,12 +127,6 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
                   onClick={() => onEdit(idea)}
                 >
                   Edit
-                </button>
-                <button
-                  className="text-muted hover:underline mr-3"
-                  onClick={() => onDuplicate(idea.id)}
-                >
-                  Duplicate
                 </button>
                 <button
                   className="text-bad hover:underline"

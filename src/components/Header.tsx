@@ -11,13 +11,13 @@ type Props = {
 export function Header({ onFeedback, onWeights, onExportPdf, onNew, canExport }: Props) {
   return (
     <header className="flex items-center justify-between flex-wrap gap-3 py-5">
-      <div className="flex items-center gap-2.5">
+      <div className="flex items-center gap-1.5">
         {/* lightbulb mark (multiply drops its white background onto the paper) */}
         <img
           src={bulbUrl}
           alt=""
           aria-hidden
-          className="w-7 h-7 shrink-0"
+          className="w-7 h-7 shrink-0 -mr-0.5"
           style={{ mixBlendMode: 'multiply' }}
         />
         <span className="font-display text-lg font-semibold tracking-tight text-ink">

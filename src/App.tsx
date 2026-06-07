@@ -2,7 +2,6 @@ import { useEffect, useReducer, useState } from 'react';
 import type { Idea, Weights } from './state/types';
 import { reducer } from './state/reducer';
 import { loadState, saveState } from './state/storage';
-import { uuid } from './lib/uuid';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { Dashboard } from './components/Dashboard';
@@ -87,9 +86,6 @@ export default function App() {
         weights={state.weights}
         onNew={openNew}
         onEdit={openEdit}
-        onDuplicate={(id) =>
-          dispatch({ type: 'duplicate', id, newId: uuid(), now: new Date().toISOString() })
-        }
         onDelete={(id) => dispatch({ type: 'delete', id })}
       />
 

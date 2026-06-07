@@ -16,11 +16,10 @@ export function DVFTriangle({ size = 320 }: Props) {
   const W = 340;
   const H = 296;
   const r = 72;
-  // Bottom circles spread wider so Feasibility/Viability sit clear of centre,
-  // while the overlap stays large enough to hold the bulb.
+  // Centres pulled toward the middle so the 3-way overlap fully holds the bulb.
   const dC = { x: 170, y: 116 }; // desirability (top)
-  const fC = { x: 120, y: 184 }; // feasibility (bottom-left)
-  const vC = { x: 220, y: 184 }; // viability (bottom-right)
+  const fC = { x: 132, y: 182 }; // feasibility (bottom-left)
+  const vC = { x: 208, y: 182 }; // viability (bottom-right)
   const cx = (dC.x + fC.x + vC.x) / 3;
   const cy = (dC.y + fC.y + vC.y) / 3;
 
@@ -32,7 +31,7 @@ export function DVFTriangle({ size = 320 }: Props) {
 
   return (
     <div className="flex flex-col items-center">
-      <h3 className="kicker text-muted mb-1">The Framework</h3>
+      <h3 className="kicker text-muted mb-1">The 3 Pillars</h3>
       <svg
         width={size}
         height={Math.round((size * H) / W)}
@@ -83,7 +82,7 @@ export function DVFTriangle({ size = 320 }: Props) {
       </svg>
       <p className="mt-2 text-xs text-muted max-w-xs text-center">
         A strong idea sits in the middle — where all three pillars overlap. This tool scores each
-        pillar so you can see which ones an idea is missing.
+        pillar so you can find which of your ideas is most likely to succeed.
       </p>
     </div>
   );
