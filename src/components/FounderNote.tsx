@@ -76,8 +76,7 @@ export function FounderNote() {
         <div className="mt-8 rounded-2xl border border-line bg-surface shadow-card p-6 md:p-8">
           <h3 className="font-display text-2xl font-semibold text-ink">Want to build alongside me?</h3>
           <p className="mt-2 text-muted leading-relaxed">
-            Join the email list to get every new feature first, the workflows I'm learning, and an
-            honest look at what's working (and what isn't) as I build a SaaS from zero.
+            Join the email list and build smarter alongside other early founders.
           </p>
 
           {joined ? (
