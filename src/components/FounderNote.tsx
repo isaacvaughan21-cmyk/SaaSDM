@@ -5,7 +5,7 @@ import { addSubscriber } from '../lib/supabase';
 // Fallback inbox used only if the Supabase backend isn't configured yet.
 const LIST_EMAIL = 'isaacvaughan21@gmail.com';
 
-export function FounderNote() {
+export function FounderNote({ onFeedback }: { onFeedback: () => void }) {
   const [email, setEmail] = useState('');
   const [joined, setJoined] = useState(false);
   const [error, setError] = useState('');
@@ -101,6 +101,17 @@ export function FounderNote() {
             </form>
           )}
           {error && <p className="mt-2 text-sm text-bad">{error}</p>}
+        </div>
+
+        <div className="mt-5 flex items-center gap-2 text-sm text-muted">
+          <span>Have an idea or found a bug?</span>
+          <button
+            type="button"
+            onClick={onFeedback}
+            className="inline-flex items-center gap-1.5 rounded-md border border-line bg-surface px-3 py-1.5 font-medium text-ink hover:border-muted transition-colors"
+          >
+            Submit feedback
+          </button>
         </div>
       </div>
     </section>

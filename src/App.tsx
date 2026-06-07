@@ -90,7 +90,7 @@ export default function App() {
         onDelete={(id) => dispatch({ type: 'delete', id })}
       />
 
-      <FounderNote />
+      <FounderNote onFeedback={() => setFeedbackOpen(true)} />
 
       {modalOpen && (
         <IdeaModal
