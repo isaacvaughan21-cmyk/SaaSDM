@@ -15,11 +15,12 @@ const MUTED = '#6B6660';
 export function DVFTriangle({ size = 320 }: Props) {
   const W = 340;
   const H = 296;
-  const r = 70;
-  // Centres pulled close so the 3-way overlap is large enough to hold the bulb.
+  const r = 72;
+  // Bottom circles spread wider so Feasibility/Viability sit clear of centre,
+  // while the overlap stays large enough to hold the bulb.
   const dC = { x: 170, y: 116 }; // desirability (top)
-  const fC = { x: 132, y: 182 }; // feasibility (bottom-left)
-  const vC = { x: 208, y: 182 }; // viability (bottom-right)
+  const fC = { x: 120, y: 184 }; // feasibility (bottom-left)
+  const vC = { x: 220, y: 184 }; // viability (bottom-right)
   const cx = (dC.x + fC.x + vC.x) / 3;
   const cy = (dC.y + fC.y + vC.y) / 3;
 
@@ -63,21 +64,21 @@ export function DVFTriangle({ size = 320 }: Props) {
           Desirability
         </text>
         <text x={dC.x} y={37} textAnchor="middle" fontSize="9.5" fill={MUTED}>
-          people want it
+          People want it.
         </text>
 
         <text x={fC.x} y={H - 14} textAnchor="middle" fontSize="14" fontWeight="700" fill={fCol}>
           Feasibility
         </text>
         <text x={fC.x} y={H - 2} textAnchor="middle" fontSize="9.5" fill={MUTED}>
-          you can build it
+          You can build it.
         </text>
 
         <text x={vC.x} y={H - 14} textAnchor="middle" fontSize="14" fontWeight="700" fill={vCol}>
           Viability
         </text>
         <text x={vC.x} y={H - 2} textAnchor="middle" fontSize="9.5" fill={MUTED}>
-          it can make money
+          It can make money.
         </text>
       </svg>
       <p className="mt-2 text-xs text-muted max-w-xs text-center">

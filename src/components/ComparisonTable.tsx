@@ -69,11 +69,11 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
         </thead>
         <tbody>
           {rows.map(({ idea, composite, pillars, flagged }, rank) => {
-            // Neutral highlight: stronger ideas get a slightly deeper warm-grey
-            // wash and a darker left rule, so ranking reads without colour.
+            // Neutral highlight: stronger ideas get a deeper warm-grey wash and
+            // a darker left rule, so ranking reads clearly without colour.
             const t = Math.max(0, Math.min(1, (composite - 1) / 4));
-            const bgAlpha = (0.03 + t * 0.07).toFixed(3);
-            const borderAlpha = (0.12 + t * 0.45).toFixed(3);
+            const bgAlpha = (0.04 + t * 0.18).toFixed(3);
+            const borderAlpha = (0.18 + t * 0.62).toFixed(3);
             const isBest = rank === 0 && rows.length > 1;
             return (
             <tr

@@ -1,3 +1,5 @@
+import bulbUrl from '../assets/lightbulb.jpg';
+
 type Props = {
   onFeedback: () => void;
   onWeights: () => void;
@@ -9,13 +11,15 @@ type Props = {
 export function Header({ onFeedback, onWeights, onExportPdf, onNew, canExport }: Props) {
   return (
     <header className="flex items-center justify-between flex-wrap gap-3 py-5">
-      <div className="flex items-center gap-3">
-        {/* compact venn mark */}
-        <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden className="shrink-0">
-          <circle cx="13" cy="9" r="6.5" fill="none" stroke="#1B1A17" strokeWidth="1.4" />
-          <circle cx="9" cy="16" r="6.5" fill="none" stroke="#1B1A17" strokeWidth="1.4" />
-          <circle cx="17" cy="16" r="6.5" fill="none" stroke="#1B1A17" strokeWidth="1.4" />
-        </svg>
+      <div className="flex items-center gap-2.5">
+        {/* lightbulb mark (multiply drops its white background onto the paper) */}
+        <img
+          src={bulbUrl}
+          alt=""
+          aria-hidden
+          className="w-7 h-7 shrink-0"
+          style={{ mixBlendMode: 'multiply' }}
+        />
         <span className="font-display text-lg font-semibold tracking-tight text-ink">
           The Idea Matrix
         </span>
