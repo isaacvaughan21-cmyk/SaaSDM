@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import profilePic from '../assets/profilepic.png';
 
 // Where list signups are delivered. Swap this mailto flow for a hosted
 // provider (Buttondown / ConvertKit / Formspree) by pointing `submit` at their
@@ -25,9 +26,19 @@ export function FounderNote() {
   return (
     <section className="mt-14 border-t border-line pt-12">
       <div className="mx-auto max-w-2xl">
-        <p className="kicker text-muted">A note from the founder</p>
+        <div className="flex items-center gap-4">
+          <img
+            src={profilePic}
+            alt="Isaac, founder of The Idea Matrix"
+            className="w-16 h-16 rounded-full object-cover border border-line shadow-card shrink-0"
+          />
+          <div>
+            <p className="kicker text-muted">A note from the founder</p>
+            <p className="font-display text-lg font-semibold text-ink mt-0.5">Isaac</p>
+          </div>
+        </div>
 
-        <div className="mt-5 space-y-4 text-ink leading-relaxed">
+        <div className="mt-6 space-y-4 text-ink leading-relaxed">
           <p>
             Hi, I'm Isaac — founder of <span className="font-display font-semibold">The Idea Matrix</span>.
           </p>
