@@ -5,6 +5,7 @@ import { loadState, saveState } from './state/storage';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { Dashboard } from './components/Dashboard';
+import { FounderNote } from './components/FounderNote';
 import { IdeaModal } from './components/IdeaModal';
 import { WeightsDrawer } from './components/WeightsDrawer';
 import { FeedbackDrawer } from './components/FeedbackDrawer';
@@ -88,6 +89,8 @@ export default function App() {
         onEdit={openEdit}
         onDelete={(id) => dispatch({ type: 'delete', id })}
       />
+
+      <FounderNote />
 
       {modalOpen && (
         <IdeaModal
