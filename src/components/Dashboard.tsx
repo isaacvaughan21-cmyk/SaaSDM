@@ -1,7 +1,6 @@
 import type { Idea, Weights } from '../state/types';
 import { ComparisonTable } from './ComparisonTable';
 import { EmptyState } from './EmptyState';
-import { Crosshair } from './Crosshair';
 import { DVFTriangle } from './DVFTriangle';
 import { RubricCards } from './RubricCards';
 
@@ -19,17 +18,6 @@ export function Dashboard({ ideas, weights, onNew, onEdit, onDuplicate, onDelete
     return <EmptyState onAdd={onNew} />;
   }
 
-  const problemDots = ideas.map((i) => ({
-    id: i.id,
-    label: i.name,
-    score: i.scores.desirability.problemSeverity,
-  }));
-  const profitDots = ideas.map((i) => ({
-    id: i.id,
-    label: i.name,
-    score: i.scores.viability.profitability,
-  }));
-
   return (
     <div className="space-y-10">
       <ComparisonTable
@@ -40,25 +28,8 @@ export function Dashboard({ ideas, weights, onNew, onEdit, onDuplicate, onDelete
         onDelete={onDelete}
       />
 
-      <div className="flex flex-wrap justify-center gap-10">
-        <Crosshair
-          title="Problem crosshair"
-          xLabel="Frequency (low → high)"
-          yLabel="Size (small → big)"
-          quadrants={['Good', 'Great', 'Bad', 'Good']}
-          dots={problemDots}
-        />
-        <Crosshair
-          title="Profitability crosshair"
-          xLabel="Revenue (low → high)"
-          yLabel="Low expense → high"
-          quadrants={['Good', 'Great', 'Bad', 'Good']}
-          dots={profitDots}
-        />
-      </div>
-
       {/* Framework reference stays visible after the first idea */}
-      <section className="border-t border-line pt-8">
+      <section id="framework" className="border-t border-line pt-8 scroll-mt-6">
         <div className="flex flex-col items-center">
           <DVFTriangle />
         </div>

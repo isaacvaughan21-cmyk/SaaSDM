@@ -1,32 +1,41 @@
 type Props = {
-  onHelp: () => void;
+  onFeedback: () => void;
   onWeights: () => void;
   onExportPdf: () => void;
   onNew: () => void;
   canExport: boolean;
 };
 
-export function Header({ onHelp, onWeights, onExportPdf, onNew, canExport }: Props) {
+export function Header({ onFeedback, onWeights, onExportPdf, onNew, canExport }: Props) {
   return (
     <header className="flex items-center justify-between flex-wrap gap-3 py-5">
       <div className="flex items-center gap-3">
-        {/* compact venn mark instead of an emoji */}
+        {/* compact venn mark */}
         <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden className="shrink-0">
           <circle cx="13" cy="9" r="6.5" fill="none" stroke="#1B1A17" strokeWidth="1.4" />
           <circle cx="9" cy="16" r="6.5" fill="none" stroke="#1B1A17" strokeWidth="1.4" />
           <circle cx="17" cy="16" r="6.5" fill="none" stroke="#1B1A17" strokeWidth="1.4" />
         </svg>
         <span className="font-display text-lg font-semibold tracking-tight text-ink">
-          Decision Matrix
+          The Idea Matrix
         </span>
       </div>
       <div className="flex items-center gap-1.5">
         <button
-          onClick={onHelp}
-          className="w-9 h-9 rounded-md text-muted hover:bg-ink-50 hover:text-ink transition-colors"
-          title="Help"
+          onClick={onFeedback}
+          className="w-9 h-9 flex items-center justify-center rounded-md text-muted hover:bg-ink-50 hover:text-ink transition-colors"
+          title="Send feedback"
+          aria-label="Send feedback"
         >
-          ?
+          {/* chat-bubble pictogram */}
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
+            <path
+              d="M2 4.5A1.5 1.5 0 0 1 3.5 3h11A1.5 1.5 0 0 1 16 4.5v7A1.5 1.5 0 0 1 14.5 13H7l-3.5 3v-3H3.5A1.5 1.5 0 0 1 2 11.5v-7Z"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinejoin="round"
+            />
+          </svg>
         </button>
         <button
           onClick={onWeights}

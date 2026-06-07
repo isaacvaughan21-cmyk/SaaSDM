@@ -1,10 +1,12 @@
 type Props = {
   onNew: () => void;
-  onHelp: () => void;
   ideaCount: number;
 };
 
-export function Hero({ onNew, onHelp, ideaCount }: Props) {
+export function Hero({ onNew, ideaCount }: Props) {
+  const scrollToFramework = () =>
+    document.getElementById('framework')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   return (
     <section className="relative border-y border-line py-14 md:py-20">
       <div className="max-w-3xl">
@@ -31,10 +33,10 @@ export function Hero({ onNew, onHelp, ideaCount }: Props) {
             <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </button>
           <button
-            onClick={onHelp}
+            onClick={scrollToFramework}
             className="inline-flex items-center rounded-md border border-line bg-surface px-6 py-3 text-ink font-medium hover:border-muted transition-colors"
           >
-            How scoring works
+            How it works
           </button>
         </div>
 

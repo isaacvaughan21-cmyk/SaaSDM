@@ -1,5 +1,4 @@
 import { RubricCards } from './RubricCards';
-import { Crosshair } from './Crosshair';
 import { DVFTriangle } from './DVFTriangle';
 
 export function EmptyState({ onAdd }: { onAdd: () => void }) {
@@ -8,15 +7,15 @@ export function EmptyState({ onAdd }: { onAdd: () => void }) {
       <h2 className="font-display text-3xl font-semibold text-ink">How the framework works</h2>
       <p className="mt-2 max-w-2xl mx-auto text-muted">
         A strong SaaS idea sits where all three pillars overlap. Score nine sub-criteria from 1–5 and
-        the matrix computes a composite score, flags fatal weaknesses, and plots your problem and
-        profitability crosshairs.
+        the matrix computes a composite score and flags fatal weaknesses, so you can see at a glance
+        which idea is worth building.
       </p>
 
       <div className="mt-8 flex justify-center">
         <DVFTriangle />
       </div>
 
-      <div className="mt-10 text-left">
+      <div id="framework" className="mt-10 text-left scroll-mt-6">
         <h3 className="font-display text-2xl font-semibold text-ink mb-1">Scoring framework</h3>
         <p className="text-sm text-muted mb-4">
           How each pillar and its sub-criteria are defined and scored.
@@ -31,23 +30,6 @@ export function EmptyState({ onAdd }: { onAdd: () => void }) {
         >
           ＋ Score your first idea
         </button>
-      </div>
-
-      <div className="mt-10 flex flex-wrap justify-center gap-10">
-        <Crosshair
-          title="Problem crosshair"
-          xLabel="Frequency (low → high)"
-          yLabel="Size (small → big)"
-          quadrants={['Good', 'Great', 'Bad', 'Good']}
-          dots={[]}
-        />
-        <Crosshair
-          title="Profitability crosshair"
-          xLabel="Revenue (low → high)"
-          yLabel="Low expense → high"
-          quadrants={['Good', 'Great', 'Bad', 'Good']}
-          dots={[]}
-        />
       </div>
     </div>
   );

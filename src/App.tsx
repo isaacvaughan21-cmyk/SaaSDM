@@ -8,7 +8,7 @@ import { Hero } from './components/Hero';
 import { Dashboard } from './components/Dashboard';
 import { IdeaModal } from './components/IdeaModal';
 import { WeightsDrawer } from './components/WeightsDrawer';
-import { HelpDrawer } from './components/HelpDrawer';
+import { FeedbackDrawer } from './components/FeedbackDrawer';
 
 const loaded = loadState();
 
@@ -17,7 +17,7 @@ export default function App() {
   const [modalIdea, setModalIdea] = useState<Idea | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [weightsOpen, setWeightsOpen] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
 
   // persist on every change (debounced)
@@ -71,7 +71,7 @@ export default function App() {
   return (
     <div className="max-w-5xl mx-auto px-4 pb-10">
       <Header
-        onHelp={() => setHelpOpen(true)}
+        onFeedback={() => setFeedbackOpen(true)}
         onWeights={() => setWeightsOpen(true)}
         onExportPdf={doExportPdf}
         onNew={openNew}
@@ -79,7 +79,7 @@ export default function App() {
       />
 
       <div className="mb-8">
-        <Hero onNew={openNew} onHelp={() => setHelpOpen(true)} ideaCount={state.ideas.length} />
+        <Hero onNew={openNew} ideaCount={state.ideas.length} />
       </div>
 
       <Dashboard
@@ -108,7 +108,12 @@ export default function App() {
           onClose={() => setWeightsOpen(false)}
         />
       )}
-      {helpOpen && <HelpDrawer onClose={() => setHelpOpen(false)} />}
+      {feedbackOpen && (
+        <FeedbackDrawer
+          onClose={() => setFeedbackOpen(false)}
+          onSent={() => showToast('Thanks — opening your email app.')}
+        />
+      )}
 
       {toast && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-ink text-white text-sm px-4 py-2 rounded-lg shadow-lg">

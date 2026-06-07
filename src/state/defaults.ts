@@ -52,8 +52,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
       weightPct: 40,
       description:
         'How painful and how frequent the underlying problem is. Big, recurring pain is the strongest signal of real demand.',
-      anchors:
-        '1 = small + infrequent, 3 = moderate, 5 = big + frequent. Encodes the problem crosshair as one score.',
+      anchors: '1 = small + infrequent, 3 = moderate, 5 = big + frequent.',
     },
     {
       key: 'dogfoodingFit',
@@ -111,7 +110,7 @@ export const CRITERIA: Record<PillarKey, CriterionMeta[]> = {
       description:
         'The gap between what you can charge and what it costs to deliver. High revenue at low cost is the engine of a sustainable solo business.',
       anchors:
-        '1 = low revenue + high cost, 3 = moderate margin, 5 = high revenue + low cost. Encodes the profitability crosshair.',
+        '1 = low revenue + high cost, 3 = moderate margin, 5 = high revenue + low cost.',
     },
     {
       key: 'distributionPath',

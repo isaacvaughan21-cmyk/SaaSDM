@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Idea, Weights } from '../state/types';
-import { compositeScore, pillarScores, isFlagged, fmt, trafficLight } from '../state/scoring';
+import { compositeScore, pillarScores, isFlagged, fmt } from '../state/scoring';
 import { ScoreDot, ScoreLegend } from './ScoreDot';
 
 type SortKey = 'composite' | 'desirability' | 'feasibility' | 'viability' | 'name';
@@ -69,17 +69,19 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
         </thead>
         <tbody>
           {rows.map(({ idea, composite, pillars, flagged }, rank) => {
-            const light = trafficLight(composite);
-            const rowColor =
-              light === 'green' ? '#0072B2' : light === 'yellow' ? '#E69F00' : '#D55E00';
+            // Neutral highlight: stronger ideas get a slightly deeper warm-grey
+            // wash and a darker left rule, so ranking reads without colour.
+            const t = Math.max(0, Math.min(1, (composite - 1) / 4));
+            const bgAlpha = (0.03 + t * 0.07).toFixed(3);
+            const borderAlpha = (0.12 + t * 0.45).toFixed(3);
             const isBest = rank === 0 && rows.length > 1;
             return (
             <tr
               key={idea.id}
               className="border-b border-line last:border-0"
               style={{
-                backgroundColor: `${rowColor}1f`, // ~12% tint
-                borderLeft: `5px solid ${flagged ? '#D55E00' : rowColor}`,
+                backgroundColor: `rgba(27,26,23,${bgAlpha})`,
+                borderLeft: `4px solid rgba(27,26,23,${borderAlpha})`,
               }}
             >
               <td className="px-3 py-2">
@@ -87,10 +89,7 @@ export function ComparisonTable({ ideas, weights, onEdit, onDuplicate, onDelete 
                   {idea.name}
                 </span>
                 {isBest && !flagged && (
-                  <span
-                    className="ml-2 align-middle text-[10px] font-bold uppercase tracking-wide text-white rounded px-1.5 py-0.5"
-                    style={{ backgroundColor: '#0072B2' }}
-                  >
+                  <span className="ml-2 align-middle text-[10px] font-bold uppercase tracking-wide text-paper bg-ink rounded px-1.5 py-0.5">
                     ★ Top pick
                   </span>
                 )}
