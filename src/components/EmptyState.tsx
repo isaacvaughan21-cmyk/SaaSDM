@@ -1,5 +1,6 @@
 import { RubricCards } from './RubricCards';
 import { DVFTriangle } from './DVFTriangle';
+import { ExampleMatrix } from './ExampleMatrix';
 
 export function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
@@ -11,7 +12,11 @@ export function EmptyState({ onAdd }: { onAdd: () => void }) {
         which idea is worth building.
       </p>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-10">
+        <ExampleMatrix />
+      </div>
+
+      <div className="mt-12 flex justify-center">
         <DVFTriangle />
       </div>
 
