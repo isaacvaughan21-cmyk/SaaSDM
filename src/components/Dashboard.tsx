@@ -33,7 +33,7 @@ export function Dashboard({ ideas, weights, onNew, onEdit, onDuplicate, onDelete
         <div className="flex flex-col items-center">
           <DVFTriangle />
         </div>
-        <h2 className="font-display text-2xl font-semibold text-ink mt-8 mb-1">Scoring framework</h2>
+        <h2 className="font-display text-2xl font-semibold text-ink mt-8 mb-1">Scoring Framework</h2>
         <p className="text-sm text-muted mb-4">
           How each pillar and its sub-criteria are defined and scored.
         </p>

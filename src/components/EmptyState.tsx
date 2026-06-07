@@ -16,7 +16,7 @@ export function EmptyState({ onAdd }: { onAdd: () => void }) {
       </div>
 
       <div id="framework" className="mt-10 text-left scroll-mt-6">
-        <h3 className="font-display text-2xl font-semibold text-ink mb-1">Scoring framework</h3>
+        <h3 className="font-display text-2xl font-semibold text-ink mb-1">Scoring Framework</h3>
         <p className="text-sm text-muted mb-4">
           How each pillar and its sub-criteria are defined and scored.
         </p>

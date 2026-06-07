@@ -1,15 +1,7 @@
-import { CRITERIA, PILLAR_LABELS, PILLAR_DESCRIPTIONS } from '../state/defaults';
+import { CRITERIA, PILLAR_LABELS, PILLAR_DESCRIPTIONS, PILLAR_COLORS } from '../state/defaults';
 import type { PillarKey } from '../state/types';
 
 const PILLARS: PillarKey[] = ['desirability', 'feasibility', 'viability'];
-
-// Neutral header shades so the three pillars stay distinguishable without
-// introducing colour that fights the editorial palette.
-const PILLAR_BAND: Record<PillarKey, string> = {
-  desirability: '#1B1A17',
-  feasibility: '#46423B',
-  viability: '#6B6660',
-};
 
 export function RubricCards() {
   return (
@@ -21,7 +13,7 @@ export function RubricCards() {
             className="rounded-xl border border-line bg-surface overflow-hidden shadow-card"
           >
             {/* Pillar header band — clearly separated from the sub-criteria */}
-            <div className="px-4 py-3 text-paper" style={{ backgroundColor: PILLAR_BAND[pillar] }}>
+            <div className="px-4 py-3 text-paper" style={{ backgroundColor: PILLAR_COLORS[pillar] }}>
               <div className="flex items-center justify-between">
                 <h4 className="font-bold text-base tracking-tight">{PILLAR_LABELS[pillar]}</h4>
                 <span className="text-[11px] font-semibold bg-paper/20 rounded px-1.5 py-0.5">

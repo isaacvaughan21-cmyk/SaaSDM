@@ -20,11 +20,12 @@ export const PILLAR_LABELS: Record<PillarKey, string> = {
   viability: 'Viability',
 };
 
-// Colorblind-safe accent per pillar (Okabe-Ito). Used via inline styles.
+// Neutral ink shades per pillar — shared by the scoring-framework headers and
+// the venn so the two read as one system.
 export const PILLAR_COLORS: Record<PillarKey, string> = {
-  desirability: '#0072B2', // blue
-  feasibility: '#E69F00', // orange
-  viability: '#009E73', // bluish green
+  desirability: '#1B1A17', // ink
+  feasibility: '#46423B', // ink-600
+  viability: '#6B6660', // muted
 };
 
 export type CriterionMeta = {
