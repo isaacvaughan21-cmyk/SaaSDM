@@ -299,8 +299,7 @@ export function LibraryView({
         </svg>
         <p className="text-xs text-muted leading-relaxed">
           <span className="font-semibold text-ink">The Idea Library is in beta.</span> Some features
-          are still a work in progress and may not behave exactly as intended. Your ideas are saved,
-          but please export anything you can’t afford to lose — and tell us what’s broken.
+          are still a work in progress and may not behave exactly as intended — tell us what’s broken.
         </p>
       </div>
 
