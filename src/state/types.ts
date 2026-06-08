@@ -44,3 +44,15 @@ export type AppState = {
 };
 
 export type PillarKey = 'desirability' | 'feasibility' | 'viability';
+
+export type LibraryIdea = {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string;
+  status: 'unscored' | 'scored';
+  scores: Idea['scores'] | null;
+  composite_score: number | null;
+  created_at: string;
+  updated_at: string;
+};
