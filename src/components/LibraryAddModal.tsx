@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { NicheSelect } from './NicheSelect';
 
 type Props = {
   niches: string[];
@@ -53,19 +54,7 @@ export function LibraryAddModal({ niches, onSave, onCancel }: Props) {
             <label className="block text-xs font-medium text-muted mb-1">
               Niche <span className="text-muted">(optional)</span>
             </label>
-            <input
-              type="text"
-              list="niche-options"
-              value={niche}
-              onChange={(e) => setNiche(e.target.value)}
-              placeholder="e.g. Developer tools, Fitness, Fintech"
-              className="w-full border border-line rounded-lg px-3 py-2 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink placeholder:text-muted"
-            />
-            <datalist id="niche-options">
-              {niches.map((n) => (
-                <option key={n} value={n} />
-              ))}
-            </datalist>
+            <NicheSelect value={niche} niches={niches} onChange={setNiche} />
           </div>
           <div>
             <label className="block text-xs font-medium text-muted mb-1">

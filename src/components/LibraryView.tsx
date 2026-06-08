@@ -137,9 +137,7 @@ function IdeaRow({
   onArchive,
   onDelete,
 }: RowProps) {
-  const [expanded, setExpanded] = useState(false);
   const notes = idea.description?.trim();
-  const isLong = !!notes && notes.length > 120;
   const scored = idea.status === 'scored';
 
   return (
@@ -170,15 +168,7 @@ function IdeaRow({
               )}
             </div>
             {notes && (
-              <p className={`text-xs text-muted mt-1 ${expanded ? '' : 'line-clamp-2'}`}>{notes}</p>
-            )}
-            {isLong && (
-              <button
-                onClick={() => setExpanded((e) => !e)}
-                className="text-xs text-ink/70 hover:text-ink mt-1 font-medium"
-              >
-                {expanded ? 'Show less' : 'Show more'}
-              </button>
+              <p className="text-xs text-muted mt-1 whitespace-pre-wrap">{notes}</p>
             )}
           </div>
         </div>
