@@ -12,7 +12,11 @@ export async function getLibraryIdeas(): Promise<LibraryIdea[]> {
     console.error('getLibraryIdeas', error);
     return [];
   }
-  return (data ?? []) as LibraryIdea[];
+  // default any legacy rows missing a workflow status to 'open'
+  return (data ?? []).map((row) => ({
+    ...row,
+    workflow_status: row.workflow_status ?? 'open',
+  })) as LibraryIdea[];
 }
 
 export async function addLibraryIdea(
@@ -26,7 +30,13 @@ export async function addLibraryIdea(
   if (!user) return null;
   const { data, error } = await supabase
     .from('ideas')
-    .insert({ user_id: user.id, name: name.trim(), description: description.trim(), status: 'unscored' })
+    .insert({
+      user_id: user.id,
+      name: name.trim(),
+      description: description.trim(),
+      status: 'unscored',
+      workflow_status: 'open',
+    })
     .select()
     .single();
   if (error) {

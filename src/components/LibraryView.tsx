@@ -170,7 +170,7 @@ function IdeaRow({ idea, rank, topPick, onStatus, onOpen, onEdit, onScore, onDel
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden>
             <path d="M5 2H2v3M9 12h3V9M12 2L8 6M2 12l4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Open
+          Plan
         </button>
         <button
           onClick={onScore}
@@ -266,7 +266,12 @@ export function LibraryView({
       {/* page header */}
       <div className="flex items-center justify-between gap-4 flex-wrap mb-5">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-ink">Idea Library</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-display text-2xl font-semibold text-ink">Idea Library</h1>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted border border-line rounded-full px-2 py-0.5">
+              Beta
+            </span>
+          </div>
           <p className="text-sm text-muted mt-0.5">
             {ideas.length === 0
               ? 'Your ideas, all in one place.'
@@ -284,6 +289,19 @@ export function LibraryView({
           </svg>
           Add idea
         </button>
+      </div>
+
+      {/* beta notice */}
+      <div className="flex items-start gap-2.5 bg-wash border border-line rounded-xl px-4 py-3 mb-6">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden className="shrink-0 mt-0.5 text-muted">
+          <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3" />
+          <path d="M8 7.2v3.4M8 5.2v.6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        </svg>
+        <p className="text-xs text-muted leading-relaxed">
+          <span className="font-semibold text-ink">The Idea Library is in beta.</span> Some features
+          are still a work in progress and may not behave exactly as intended. Your ideas are saved,
+          but please export anything you can’t afford to lose — and tell us what’s broken.
+        </p>
       </div>
 
       {/* status filter */}
