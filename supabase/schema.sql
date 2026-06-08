@@ -29,3 +29,30 @@ create policy "anon can subscribe"
 drop policy if exists "anon can send feedback" on public.feedback;
 create policy "anon can send feedback"
   on public.feedback for insert to anon with check (true);
+
+-- 3. Idea Library — requires an authenticated user (Supabase Auth)
+create table if not exists public.ideas (
+  id              uuid primary key default gen_random_uuid(),
+  user_id         uuid references auth.users(id) on delete cascade not null,
+  name            text not null,
+  description     text not null default '',
+  status          text not null check (status in ('unscored', 'scored')) default 'unscored',
+  scores          jsonb,
+  composite_score numeric(4,2),
+  created_at      timestamptz not null default now(),
+  updated_at      timestamptz not null default now()
+);
+
+alter table public.ideas enable row level security;
+
+create policy "Users can read their own ideas" on public.ideas
+  for select using (auth.uid() = user_id);
+
+create policy "Users can insert their own ideas" on public.ideas
+  for insert with check (auth.uid() = user_id);
+
+create policy "Users can update their own ideas" on public.ideas
+  for update using (auth.uid() = user_id);
+
+create policy "Users can delete their own ideas" on public.ideas
+  for delete using (auth.uid() = user_id);
