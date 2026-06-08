@@ -455,20 +455,20 @@ export function LibraryView({
               .sort((a, b) => (rankMap.get(a.id) ?? Infinity) - (rankMap.get(b.id) ?? Infinity));
             return (
               <>
-                {unscored.length > 0 && (
-                  <section>
-                    <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
-                      To Score — {unscored.length}
-                    </h2>
-                    <div className="space-y-2">{unscored.map((idea) => renderRow(idea, true))}</div>
-                  </section>
-                )}
                 {scored.length > 0 && (
                   <section>
                     <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
                       Scored — {scored.length}
                     </h2>
                     <div className="space-y-2">{scored.map((idea) => renderRow(idea, true))}</div>
+                  </section>
+                )}
+                {unscored.length > 0 && (
+                  <section>
+                    <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
+                      To Score — {unscored.length}
+                    </h2>
+                    <div className="space-y-2">{unscored.map((idea) => renderRow(idea, true))}</div>
                   </section>
                 )}
               </>
