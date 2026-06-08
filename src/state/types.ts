@@ -45,14 +45,49 @@ export type AppState = {
 
 export type PillarKey = 'desirability' | 'feasibility' | 'viability';
 
+export type WorkflowStatus = 'open' | 'wip' | 'on_hold';
+
+export const WORKFLOW_LABELS: Record<WorkflowStatus, string> = {
+  open: 'Open',
+  wip: 'WIP',
+  on_hold: 'On-Hold',
+};
+
+// --- Idea workspace (planning dashboard) ---
+
+export type MindMapNode = {
+  id: string;
+  text: string;
+  x: number; // px offset from canvas centre
+  y: number;
+  parentId: string | null; // null = connects to the central idea node
+};
+
+export type FeatureItem = { id: string; text: string; done: boolean };
+export type ScheduleItem = { id: string; date: string; label: string };
+export type ActionItem = { id: string; text: string; done: boolean };
+
+export type IdeaWorkspace = {
+  mindmap: MindMapNode[];
+  features: FeatureItem[];
+  schedule: ScheduleItem[];
+  actionItems: ActionItem[];
+};
+
+export function emptyWorkspace(): IdeaWorkspace {
+  return { mindmap: [], features: [], schedule: [], actionItems: [] };
+}
+
 export type LibraryIdea = {
   id: string;
   user_id: string;
   name: string;
   description: string;
   status: 'unscored' | 'scored';
+  workflow_status: WorkflowStatus;
   scores: Idea['scores'] | null;
   composite_score: number | null;
+  workspace: IdeaWorkspace | null;
   created_at: string;
   updated_at: string;
 };

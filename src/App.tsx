@@ -16,6 +16,7 @@ import { WeightsDrawer } from './components/WeightsDrawer';
 import { FeedbackDrawer } from './components/FeedbackDrawer';
 import { AuthModal } from './components/AuthModal';
 import { LibraryView } from './components/LibraryView';
+import { IdeaWorkspace } from './components/IdeaWorkspace';
 import { VersionBadge } from './components/VersionBadge';
 
 type Tab = 'matrix' | 'library';
@@ -46,6 +47,7 @@ export default function App() {
   // library scoring state
   const [libraryScoringId, setLibraryScoringId] = useState<string | null>(null);
   const [libraryRefreshKey, setLibraryRefreshKey] = useState(0);
+  const [workspaceIdea, setWorkspaceIdea] = useState<LibraryIdea | null>(null);
 
   // persist on every change
   useEffect(() => {
@@ -191,16 +193,20 @@ export default function App() {
         </>
       )}
 
-      {activeTab === 'library' && (
-        <LibraryView
-          user={user}
-          weights={state.weights}
-          refreshKey={libraryRefreshKey}
-          onNeedAuth={() => setAuthOpen(true)}
-          onScoreNow={openScoreFromLibrary}
-          onEditScores={openEditFromLibrary}
-        />
-      )}
+      {activeTab === 'library' &&
+        (workspaceIdea ? (
+          <IdeaWorkspace idea={workspaceIdea} onBack={() => setWorkspaceIdea(null)} />
+        ) : (
+          <LibraryView
+            user={user}
+            weights={state.weights}
+            refreshKey={libraryRefreshKey}
+            onNeedAuth={() => setAuthOpen(true)}
+            onScoreNow={openScoreFromLibrary}
+            onEditScores={openEditFromLibrary}
+            onOpenWorkspace={setWorkspaceIdea}
+          />
+        ))}
 
       {/* footer */}
       <footer className="mt-12 pt-6 border-t border-line flex items-center justify-center">

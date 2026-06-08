@@ -11,6 +11,18 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.2.0',
+    date: '2026-06-07',
+    title: 'Planning workspace & library upgrades',
+    changes: [
+      'Open any idea into a planning workspace — mind map, feature ideas, schedule, and action items',
+      'Set each idea to Open, WIP, or On-Hold and filter the library by status',
+      'Edit an idea’s name and notes from the library',
+      'Expand long notes inline with Show more',
+      'Opt in to founder tips and updates when you sign up',
+    ],
+  },
+  {
     version: '1.1.0',
     date: '2026-06-07',
     title: 'Idea Library & accounts',
