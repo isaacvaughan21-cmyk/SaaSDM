@@ -9,6 +9,8 @@ weaknesses, and shows the strongest one.
 - **Repo:** https://github.com/isaacvaughan21-cmyk/SaaSDM  (default branch `main`)
 - **Owner/founder:** Isaac (isaacvaughan21@gmail.com), new to SaaS, mechanical-eng background.
 - **Local path:** `C:\Claude Cowork\SaaS\SaaS Decision Matrix\SaaS Decision Matrix`
+  ⚠️ The folder name is **DOUBLY NESTED** (repeats twice). The project + this file live in
+  the *inner* folder. Always open the full nested path, not the outer one (which looks empty).
 - Windows machine. `gh` CLI is NOT installed; use the web UI for GitHub settings.
 
 ## Stack
@@ -16,6 +18,8 @@ weaknesses, and shows the strongest one.
 - **Supabase** (`@supabase/supabase-js`) for backend (email list + feedback).
 - **jsPDF** + `jspdf-autotable` (lazy-loaded) for the PDF export.
 - Fonts via Google Fonts `<link>` in `index.html`: **Fraunces** (display serif) + **Instrument Sans** (body).
+- **Cloudflare Web Analytics** beacon `<script>` in `index.html` (token in the markup; free,
+  cookieless). View traffic at Cloudflare dashboard → Analytics & Logs → Web Analytics.
 
 ### Critical tooling history / gotchas
 - Tailwind **v3 + PostCSS had a dev-mode bug** here: `npm run dev` injected only the
@@ -61,7 +65,10 @@ weaknesses, and shows the strongest one.
   (Duplicate was removed). `ScoreDot.tsx` exports `LIGHT_STYLES` + `ScoreLegend`.
 - `DVFTriangle` — venn; circles + labels in pillar shades; bulb image in the centre
   overlap; labels sit outside the circles ("People want it." etc.).
-- `IdeaModal`, `WeightsDrawer`, `FeedbackDrawer`, `FounderNote`.
+- `IdeaModal`, `WeightsDrawer`, `FeedbackDrawer`.
+- `FounderNote` — founder photo (`src/assets/profilepic.png`) + story, email-list signup
+  (CTA "Join the email list and build smarter alongside other early founders."), and a
+  "Submit feedback" button that opens the FeedbackDrawer via an `onFeedback` prop from App.
 
 ## Backend — Supabase
 - Project ref: `ggcjyevedvmrpvsapypo` → URL `https://ggcjyevedvmrpvsapypo.supabase.co`.
