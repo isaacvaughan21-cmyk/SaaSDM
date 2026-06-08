@@ -83,8 +83,10 @@ export type LibraryIdea = {
   user_id: string;
   name: string;
   description: string;
+  niche: string;
   status: 'unscored' | 'scored';
   workflow_status: WorkflowStatus;
+  archived: boolean;
   scores: Idea['scores'] | null;
   composite_score: number | null;
   workspace: IdeaWorkspace | null;

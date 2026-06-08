@@ -1,11 +1,16 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import type { Idea, LibraryIdea, Weights } from './state/types';
 import type { Score } from './state/types';
 import { reducer } from './state/reducer';
 import { loadState, saveState } from './state/storage';
 import { compositeScore } from './state/scoring';
 import { uuid } from './lib/uuid';
-import { scoreLibraryIdea, updateLibraryIdeaScores } from './lib/libraryDb';
+import {
+  getLibraryIdeas,
+  addScoredLibraryIdea,
+  saveScoredLibraryIdea,
+  deleteLibraryIdea,
+} from './lib/libraryDb';
 import { useAuth } from './hooks/useAuth';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -31,6 +36,18 @@ function blankIdeaScores(): Idea['scores'] {
   };
 }
 
+/** A scored Library idea, in the shape the Matrix/Dashboard expects. */
+function libraryIdeaToIdea(li: LibraryIdea): Idea {
+  return {
+    id: li.id,
+    name: li.name,
+    description: li.description,
+    scores: li.scores ?? blankIdeaScores(),
+    createdAt: li.created_at,
+    updatedAt: li.updated_at,
+  };
+}
+
 export default function App() {
   const [state, dispatch] = useReducer(reducer, loaded.state);
   const [activeTab, setActiveTab] = useState<Tab>('matrix');
@@ -48,6 +65,54 @@ export default function App() {
   const [libraryScoringId, setLibraryScoringId] = useState<string | null>(null);
   const [libraryRefreshKey, setLibraryRefreshKey] = useState(0);
   const [workspaceIdea, setWorkspaceIdea] = useState<LibraryIdea | null>(null);
+
+  // when signed in, the Library is the source of truth for the Matrix
+  const [libIdeas, setLibIdeas] = useState<LibraryIdea[]>([]);
+
+  const reloadLib = useCallback(async () => {
+    if (!user) {
+      setLibIdeas([]);
+      return;
+    }
+    setLibIdeas(await getLibraryIdeas());
+  }, [user]);
+
+  // keep the Matrix copy fresh whenever the user, tab, or library changes
+  useEffect(() => {
+    reloadLib();
+  }, [reloadLib, activeTab, libraryRefreshKey]);
+
+  // The Matrix shows local ideas when signed out, and the user's scored
+  // (non-archived) Library ideas when signed in.
+  const matrixIdeas: Idea[] = user
+    ? libIdeas
+        .filter((i) => i.status === 'scored' && !i.archived)
+        .map(libraryIdeaToIdea)
+    : state.ideas;
+
+  // On sign-in, migrate any local Matrix ideas into the Library, then clear
+  // them locally so the Library is the single source of truth.
+  const migratedRef = useRef(false);
+  useEffect(() => {
+    if (!user) {
+      migratedRef.current = false;
+      return;
+    }
+    if (migratedRef.current) return;
+    migratedRef.current = true;
+    (async () => {
+      if (state.ideas.length > 0) {
+        for (const idea of state.ideas) {
+          const cs = compositeScore(idea, state.weights);
+          await addScoredLibraryIdea(idea.name, idea.description, idea.scores, cs);
+        }
+        dispatch({ type: 'import', state: { ...state, ideas: [] } });
+        showToast('Your ideas were saved to your Library.');
+      }
+      await reloadLib();
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   // persist on every change
   useEffect(() => {
@@ -75,7 +140,8 @@ export default function App() {
     setModalOpen(true);
   };
   const openEdit = (idea: Idea) => {
-    setLibraryScoringId(null);
+    // when signed in, Matrix ideas ARE library ideas → route the save to the library
+    setLibraryScoringId(user ? idea.id : null);
     setModalIdea(idea);
     setModalOpen(true);
   };
@@ -111,28 +177,44 @@ export default function App() {
   };
 
   const saveIdea = async (idea: Idea) => {
-    // add / update in local matrix
-    if (state.ideas.some((i) => i.id === idea.id)) {
-      dispatch({ type: 'update', idea });
-    } else {
-      dispatch({ type: 'add', idea });
-    }
-
-    // if triggered from library, sync to Supabase too
-    if (libraryScoringId) {
+    if (user) {
+      // signed in → the Library is the source of truth
       const cs = compositeScore(idea, state.weights);
-      const alreadyScored = !!modalIdea?.scores;
-      if (alreadyScored) {
-        await updateLibraryIdeaScores(libraryScoringId, idea.scores, cs);
+      if (libraryScoringId) {
+        await saveScoredLibraryIdea(libraryScoringId, {
+          name: idea.name,
+          description: idea.description,
+          scores: idea.scores,
+          composite_score: cs,
+        });
       } else {
-        await scoreLibraryIdea(libraryScoringId, idea.scores, cs);
+        await addScoredLibraryIdea(idea.name, idea.description, idea.scores, cs);
       }
       setLibraryScoringId(null);
       setLibraryRefreshKey((k) => k + 1);
-      showToast('Scores saved to your Library.');
+      await reloadLib();
+      showToast('Saved to your Library.');
+    } else {
+      // signed out → local matrix only
+      if (state.ideas.some((i) => i.id === idea.id)) {
+        dispatch({ type: 'update', idea });
+      } else {
+        dispatch({ type: 'add', idea });
+      }
     }
 
     setModalOpen(false);
+  };
+
+  // delete from the Matrix: hits the Library when signed in, local otherwise
+  const deleteFromMatrix = async (id: string) => {
+    if (user) {
+      await deleteLibraryIdea(id);
+      setLibraryRefreshKey((k) => k + 1);
+      await reloadLib();
+    } else {
+      dispatch({ type: 'delete', id });
+    }
   };
 
   const saveWeights = (weights: Weights) => {
@@ -142,9 +224,9 @@ export default function App() {
   };
 
   const doExportPdf = async () => {
-    if (state.ideas.length === 0) return;
+    if (matrixIdeas.length === 0) return;
     const { exportPdf } = await import('./lib/exportPdf');
-    exportPdf(state);
+    exportPdf({ ...state, ideas: matrixIdeas });
     showToast('PDF report downloaded.');
   };
 
@@ -174,20 +256,20 @@ export default function App() {
         onWeights={() => setWeightsOpen(true)}
         onExportPdf={doExportPdf}
         onNew={openNew}
-        canExport={state.ideas.length > 0}
+        canExport={matrixIdeas.length > 0}
       />
 
       {activeTab === 'matrix' && (
         <>
           <div className="mb-8">
-            <Hero onNew={openNew} ideaCount={state.ideas.length} />
+            <Hero onNew={openNew} ideaCount={matrixIdeas.length} />
           </div>
           <Dashboard
-            ideas={state.ideas}
+            ideas={matrixIdeas}
             weights={state.weights}
             onNew={openNew}
             onEdit={openEdit}
-            onDelete={(id) => dispatch({ type: 'delete', id })}
+            onDelete={deleteFromMatrix}
           />
           <FounderNote onFeedback={() => setFeedbackOpen(true)} />
         </>

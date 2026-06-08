@@ -11,6 +11,17 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-06-08',
+    title: 'Archive, niche grouping & synced Matrix',
+    changes: [
+      'Archive ideas you’re not pursuing without deleting them',
+      'Give each idea a niche and group the library by niche',
+      'Filter to an Archived view and restore ideas anytime',
+      'When signed in, the Matrix mirrors your Library — your ideas sync to your account',
+    ],
+  },
+  {
     version: '1.2.0',
     date: '2026-06-07',
     title: 'Planning workspace & library upgrades',
