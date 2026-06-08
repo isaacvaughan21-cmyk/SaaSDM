@@ -17,18 +17,22 @@ create table if not exists public.feedback (
   created_at timestamptz not null default now()
 );
 
--- Row-Level Security: anonymous visitors may INSERT only. Nobody can read the
--- data through the public API — you read it in the dashboard (Table Editor).
+-- Row-Level Security: visitors may INSERT only. Nobody can read the data
+-- through the public API — you read it in the dashboard (Table Editor).
+-- NOTE: must allow BOTH anon and authenticated — once a visitor signs in they
+-- become the `authenticated` role, and an anon-only policy would block them.
 alter table public.subscribers enable row level security;
 alter table public.feedback    enable row level security;
 
 drop policy if exists "anon can subscribe" on public.subscribers;
-create policy "anon can subscribe"
-  on public.subscribers for insert to anon with check (true);
+drop policy if exists "anyone can subscribe" on public.subscribers;
+create policy "anyone can subscribe"
+  on public.subscribers for insert to anon, authenticated with check (true);
 
 drop policy if exists "anon can send feedback" on public.feedback;
-create policy "anon can send feedback"
-  on public.feedback for insert to anon with check (true);
+drop policy if exists "anyone can send feedback" on public.feedback;
+create policy "anyone can send feedback"
+  on public.feedback for insert to anon, authenticated with check (true);
 
 -- 3. Idea Library — requires an authenticated user (Supabase Auth)
 create table if not exists public.ideas (
