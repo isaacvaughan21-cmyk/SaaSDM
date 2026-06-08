@@ -5,7 +5,7 @@ import { reducer } from './state/reducer';
 import { loadState, saveState } from './state/storage';
 import { compositeScore } from './state/scoring';
 import { uuid } from './lib/uuid';
-import { scoreLibraryIdea, updateLibraryIdeaScores } from './lib/libraryDb';
+import { scoreLibraryIdea } from './lib/libraryDb';
 import { useAuth } from './hooks/useAuth';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -118,15 +118,12 @@ export default function App() {
       dispatch({ type: 'add', idea });
     }
 
-    // if triggered from library, sync to Supabase too
+    // if triggered from library, sync to Supabase too. scoreLibraryIdea sets
+    // status='scored' (so "Score now" ideas move to the Scored list) and also
+    // updates the scores + composite, so it's correct for re-scoring as well.
     if (libraryScoringId) {
       const cs = compositeScore(idea, state.weights);
-      const alreadyScored = !!modalIdea?.scores;
-      if (alreadyScored) {
-        await updateLibraryIdeaScores(libraryScoringId, idea.scores, cs);
-      } else {
-        await scoreLibraryIdea(libraryScoringId, idea.scores, cs);
-      }
+      await scoreLibraryIdea(libraryScoringId, idea.scores, cs);
       setLibraryScoringId(null);
       setLibraryRefreshKey((k) => k + 1);
       showToast('Scores saved to your Library.');
