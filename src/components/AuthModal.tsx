@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, addSubscriber } from '../lib/supabase';
 
 type Props = {
   onClose: () => void;
@@ -12,6 +12,7 @@ export function AuthModal({ onClose, onSuccess }: Props) {
   const [tab, setTab] = useState<Tab>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [optIn, setOptIn] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmMsg, setConfirmMsg] = useState<string | null>(null);
@@ -42,6 +43,14 @@ export function AuthModal({ onClose, onSuccess }: Props) {
         setError(error.message);
         setLoading(false);
         return;
+      }
+      // opt-in to email marketing (best-effort; never blocks signup)
+      if (optIn) {
+        try {
+          await addSubscriber(email);
+        } catch {
+          /* ignore — signup already succeeded */
+        }
       }
       setConfirmMsg('Check your email for a confirmation link, then sign in.');
       setLoading(false);
@@ -111,6 +120,20 @@ export function AuthModal({ onClose, onSuccess }: Props) {
                 className="w-full border border-line rounded-lg px-3 py-2 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink placeholder:text-muted"
               />
             </div>
+            {tab === 'signup' && (
+              <label className="flex items-start gap-2 cursor-pointer select-none pt-0.5">
+                <input
+                  type="checkbox"
+                  checked={optIn}
+                  onChange={(e) => setOptIn(e.target.checked)}
+                  className="mt-0.5 accent-ink w-3.5 h-3.5 shrink-0"
+                />
+                <span className="text-xs text-muted leading-snug">
+                  Email me occasional founder tips and product updates. No spam, unsubscribe
+                  anytime.
+                </span>
+              </label>
+            )}
             {error && <p className="text-xs text-bad">{error}</p>}
             <button
               type="submit"

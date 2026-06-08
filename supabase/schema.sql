@@ -56,3 +56,15 @@ create policy "Users can update their own ideas" on public.ideas
 
 create policy "Users can delete their own ideas" on public.ideas
   for delete using (auth.uid() = user_id);
+
+-- 3a. Migration (v1.2.0): workflow status + planning workspace.
+-- Safe to re-run; ALTERs are guarded with "if not exists".
+alter table public.ideas
+  add column if not exists workflow_status text not null default 'open';
+alter table public.ideas
+  drop constraint if exists ideas_workflow_status_check;
+alter table public.ideas
+  add constraint ideas_workflow_status_check
+  check (workflow_status in ('open', 'wip', 'on_hold'));
+alter table public.ideas
+  add column if not exists workspace jsonb;
