@@ -1,20 +1,22 @@
 import { useState } from 'react';
 
 type Props = {
-  onSave: (name: string, description: string) => Promise<void>;
+  niches: string[];
+  onSave: (name: string, description: string, niche: string) => Promise<void>;
   onCancel: () => void;
 };
 
-export function LibraryAddModal({ onSave, onCancel }: Props) {
+export function LibraryAddModal({ niches, onSave, onCancel }: Props) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [niche, setNiche] = useState('');
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
     setSaving(true);
-    await onSave(name, description);
+    await onSave(name, description, niche);
     setSaving(false);
   };
 
@@ -46,6 +48,24 @@ export function LibraryAddModal({ onSave, onCancel }: Props) {
               placeholder="e.g. AI changelog writer for dev teams"
               className="w-full border border-line rounded-lg px-3 py-2 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink placeholder:text-muted"
             />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-muted mb-1">
+              Niche <span className="text-muted">(optional)</span>
+            </label>
+            <input
+              type="text"
+              list="niche-options"
+              value={niche}
+              onChange={(e) => setNiche(e.target.value)}
+              placeholder="e.g. Developer tools, Fitness, Fintech"
+              className="w-full border border-line rounded-lg px-3 py-2 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink placeholder:text-muted"
+            />
+            <datalist id="niche-options">
+              {niches.map((n) => (
+                <option key={n} value={n} />
+              ))}
+            </datalist>
           </div>
           <div>
             <label className="block text-xs font-medium text-muted mb-1">

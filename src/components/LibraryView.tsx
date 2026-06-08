@@ -8,6 +8,7 @@ import {
   deleteLibraryIdea,
   updateLibraryIdea,
   updateWorkflowStatus,
+  setIdeaArchived,
 } from '../lib/libraryDb';
 import { trafficLight } from '../state/scoring';
 import { LIGHT_STYLES } from './ScoreDot';
@@ -25,7 +26,10 @@ type Props = {
   onOpenWorkspace: (idea: LibraryIdea) => void;
 };
 
-type Filter = 'all' | WorkflowStatus;
+type Filter = 'all' | WorkflowStatus | 'archived';
+type GroupBy = 'status' | 'niche';
+
+const NO_NICHE = 'Uncategorized';
 
 function SignInPrompt({ onSignIn }: { onSignIn: () => void }) {
   return (
@@ -102,25 +106,44 @@ const DeleteIcon = () => (
   </svg>
 );
 
+const ArchiveIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden>
+    <path d="M1.5 3.5h11v2h-11zM2.5 5.5h9v6h-9zM5.5 8h3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
 type RowProps = {
   idea: LibraryIdea;
   rank?: number;
   topPick?: boolean;
+  showNiche?: boolean;
   onStatus: (s: WorkflowStatus) => void;
   onOpen: () => void;
   onEdit: () => void;
   onScore: () => void;
+  onArchive: () => void;
   onDelete: () => void;
 };
 
-function IdeaRow({ idea, rank, topPick, onStatus, onOpen, onEdit, onScore, onDelete }: RowProps) {
+function IdeaRow({
+  idea,
+  rank,
+  topPick,
+  showNiche,
+  onStatus,
+  onOpen,
+  onEdit,
+  onScore,
+  onArchive,
+  onDelete,
+}: RowProps) {
   const [expanded, setExpanded] = useState(false);
   const notes = idea.description?.trim();
   const isLong = !!notes && notes.length > 120;
   const scored = idea.status === 'scored';
 
   return (
-    <div className="bg-surface border border-line rounded-xl px-5 py-4 shadow-card">
+    <div className={`bg-surface border border-line rounded-xl px-5 py-4 shadow-card ${idea.archived ? 'opacity-70' : ''}`}>
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start gap-3 min-w-0 flex-1">
           {scored && rank != null && (
@@ -137,6 +160,11 @@ function IdeaRow({ idea, rank, topPick, onStatus, onOpen, onEdit, onScore, onDel
               >
                 {idea.name}
               </button>
+              {showNiche && idea.niche && (
+                <span className="text-xs text-muted bg-ink-50 px-2 py-0.5 rounded-full">
+                  {idea.niche}
+                </span>
+              )}
               {topPick && (
                 <span className="text-xs text-muted bg-ink-50 px-2 py-0.5 rounded-full">★ Top pick</span>
               )}
@@ -157,7 +185,7 @@ function IdeaRow({ idea, rank, topPick, onStatus, onOpen, onEdit, onScore, onDel
 
         <div className="flex items-center gap-2 shrink-0">
           {scored && idea.composite_score != null && <TrafficDot score={idea.composite_score} />}
-          <WorkflowStatusPicker value={idea.workflow_status} onChange={onStatus} />
+          {!idea.archived && <WorkflowStatusPicker value={idea.workflow_status} onChange={onStatus} />}
         </div>
       </div>
 
@@ -186,10 +214,18 @@ function IdeaRow({ idea, rank, topPick, onStatus, onOpen, onEdit, onScore, onDel
         </button>
         <div className="flex-1" />
         <button
+          onClick={onArchive}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-muted rounded-md hover:bg-ink-50 hover:text-ink transition-colors"
+          title={idea.archived ? 'Restore to Library' : 'Archive idea'}
+        >
+          <ArchiveIcon />
+          {idea.archived ? 'Restore' : 'Archive'}
+        </button>
+        <button
           onClick={onDelete}
           className="w-7 h-7 flex items-center justify-center rounded-md text-muted hover:bg-ink-50 hover:text-ink transition-colors"
-          title="Remove from Library"
-          aria-label="Remove from Library"
+          title="Delete permanently"
+          aria-label="Delete permanently"
         >
           <DeleteIcon />
         </button>
@@ -212,6 +248,7 @@ export function LibraryView({
   const [addOpen, setAddOpen] = useState(false);
   const [editIdea, setEditIdea] = useState<LibraryIdea | null>(null);
   const [filter, setFilter] = useState<Filter>('all');
+  const [groupBy, setGroupBy] = useState<GroupBy>('status');
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -229,37 +266,102 @@ export function LibraryView({
     return <SignInPrompt onSignIn={onNeedAuth} />;
   }
 
-  const handleAdd = async (name: string, description: string) => {
-    await addLibraryIdea(name, description);
+  const niches = Array.from(
+    new Set(ideas.map((i) => i.niche?.trim()).filter((n): n is string => !!n))
+  ).sort((a, b) => a.localeCompare(b));
+
+  const handleAdd = async (name: string, description: string, niche: string) => {
+    await addLibraryIdea(name, description, niche);
     setAddOpen(false);
     await load();
   };
 
-  const handleEditSave = async (id: string, name: string, description: string) => {
-    await updateLibraryIdea(id, { name, description });
+  const handleEditSave = async (id: string, name: string, description: string, niche: string) => {
+    await updateLibraryIdea(id, { name, description, niche });
     setEditIdea(null);
     await load();
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Remove this idea from your Library?')) return;
+    if (!confirm('Permanently delete this idea? This cannot be undone.')) return;
     await deleteLibraryIdea(id);
     await load();
   };
 
   const handleStatus = async (id: string, status: WorkflowStatus) => {
-    // optimistic update
     setIdeas((prev) => prev.map((i) => (i.id === id ? { ...i, workflow_status: status } : i)));
     await updateWorkflowStatus(id, status);
   };
 
-  const filtered = ideas.filter((i) => filter === 'all' || i.workflow_status === filter);
-  const unscored = filtered.filter((i) => i.status === 'unscored');
-  const scored = filtered.filter((i) => i.status === 'scored');
+  const handleArchive = async (id: string, archived: boolean) => {
+    setIdeas((prev) => prev.map((i) => (i.id === id ? { ...i, archived } : i)));
+    await setIdeaArchived(id, archived);
+  };
 
-  const filters: Filter[] = ['all', 'open', 'wip', 'on_hold'];
+  // global rank among active (non-archived) scored ideas
+  const rankMap = new Map<string, number>();
+  ideas
+    .filter((i) => !i.archived && i.status === 'scored')
+    .sort((a, b) => (b.composite_score ?? 0) - (a.composite_score ?? 0))
+    .forEach((i, idx) => rankMap.set(i.id, idx + 1));
+  const activeScoredCount = rankMap.size;
+
+  const viewArchived = filter === 'archived';
+  const base = ideas.filter((i) => (viewArchived ? i.archived : !i.archived));
+  const filtered =
+    viewArchived || filter === 'all' ? base : base.filter((i) => i.workflow_status === filter);
+
+  const activeCount = ideas.filter((i) => !i.archived).length;
+  const archivedCount = ideas.filter((i) => i.archived).length;
+  const toScoreCount = ideas.filter((i) => !i.archived && i.status === 'unscored').length;
+
+  const filters: Filter[] = ['all', 'open', 'wip', 'on_hold', 'archived'];
   const countFor = (f: Filter) =>
-    f === 'all' ? ideas.length : ideas.filter((i) => i.workflow_status === f).length;
+    f === 'all'
+      ? activeCount
+      : f === 'archived'
+        ? archivedCount
+        : ideas.filter((i) => !i.archived && i.workflow_status === f).length;
+
+  const renderRow = (idea: LibraryIdea, showNiche: boolean) => (
+    <IdeaRow
+      key={idea.id}
+      idea={idea}
+      rank={rankMap.get(idea.id)}
+      topPick={rankMap.get(idea.id) === 1 && activeScoredCount > 1}
+      showNiche={showNiche}
+      onStatus={(s) => handleStatus(idea.id, s)}
+      onOpen={() => onOpenWorkspace(idea)}
+      onEdit={() => setEditIdea(idea)}
+      onScore={() => (idea.status === 'scored' ? onEditScores(idea) : onScoreNow(idea))}
+      onArchive={() => handleArchive(idea.id, !idea.archived)}
+      onDelete={() => handleDelete(idea.id)}
+    />
+  );
+
+  // group by niche
+  const nicheGroups = () => {
+    const map = new Map<string, LibraryIdea[]>();
+    for (const idea of filtered) {
+      const key = idea.niche?.trim() || NO_NICHE;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(idea);
+    }
+    const keys = Array.from(map.keys()).sort((a, b) => {
+      if (a === NO_NICHE) return 1;
+      if (b === NO_NICHE) return -1;
+      return a.localeCompare(b);
+    });
+    // within a niche: scored (by rank) first, then unscored
+    return keys.map((k) => {
+      const list = map.get(k)!.slice().sort((a, b) => {
+        const ra = rankMap.get(a.id) ?? Infinity;
+        const rb = rankMap.get(b.id) ?? Infinity;
+        return ra - rb;
+      });
+      return { niche: k, list };
+    });
+  };
 
   return (
     <div className="mt-8">
@@ -275,9 +377,7 @@ export function LibraryView({
           <p className="text-sm text-muted mt-0.5">
             {ideas.length === 0
               ? 'Your ideas, all in one place.'
-              : `${ideas.length} idea${ideas.length === 1 ? '' : 's'} — ${
-                  ideas.filter((i) => i.status === 'unscored').length
-                } to score`}
+              : `${activeCount} idea${activeCount === 1 ? '' : 's'} — ${toScoreCount} to score`}
           </p>
         </div>
         <button
@@ -303,22 +403,37 @@ export function LibraryView({
         </p>
       </div>
 
-      {/* status filter */}
+      {/* controls: status filter + group-by toggle */}
       {ideas.length > 0 && (
-        <div className="flex items-center gap-1.5 mb-6 flex-wrap">
-          {filters.map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                filter === f
-                  ? 'bg-ink text-paper border-ink'
-                  : 'border-line text-muted hover:bg-ink-50 hover:text-ink'
-              }`}
-            >
-              {f === 'all' ? 'All' : WORKFLOW_LABELS[f]} ({countFor(f)})
-            </button>
-          ))}
+        <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {filters.map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  filter === f
+                    ? 'bg-ink text-paper border-ink'
+                    : 'border-line text-muted hover:bg-ink-50 hover:text-ink'
+                }`}
+              >
+                {f === 'all' ? 'All' : f === 'archived' ? 'Archived' : WORKFLOW_LABELS[f]} ({countFor(f)})
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-1 bg-wash border border-line rounded-lg p-0.5">
+            {(['status', 'niche'] as GroupBy[]).map((g) => (
+              <button
+                key={g}
+                onClick={() => setGroupBy(g)}
+                className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                  groupBy === g ? 'bg-ink text-paper' : 'text-muted hover:text-ink'
+                }`}
+              >
+                {g === 'status' ? 'By status' : 'By niche'}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
@@ -328,59 +443,60 @@ export function LibraryView({
         <EmptyLibrary onAdd={() => setAddOpen(true)} />
       ) : filtered.length === 0 ? (
         <div className="py-16 text-center text-sm text-muted">
-          No ideas with this status.
+          {viewArchived ? 'No archived ideas.' : 'No ideas with this status.'}
+        </div>
+      ) : groupBy === 'niche' ? (
+        <div className="space-y-8">
+          {nicheGroups().map(({ niche, list }) => (
+            <section key={niche}>
+              <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
+                {niche} — {list.length}
+              </h2>
+              <div className="space-y-2">{list.map((idea) => renderRow(idea, false))}</div>
+            </section>
+          ))}
         </div>
       ) : (
         <div className="space-y-8">
-          {unscored.length > 0 && (
-            <section>
-              <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
-                To Score — {unscored.length}
-              </h2>
-              <div className="space-y-2">
-                {unscored.map((idea) => (
-                  <IdeaRow
-                    key={idea.id}
-                    idea={idea}
-                    onStatus={(s) => handleStatus(idea.id, s)}
-                    onOpen={() => onOpenWorkspace(idea)}
-                    onEdit={() => setEditIdea(idea)}
-                    onScore={() => onScoreNow(idea)}
-                    onDelete={() => handleDelete(idea.id)}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {scored.length > 0 && (
-            <section>
-              <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
-                Scored — {scored.length}
-              </h2>
-              <div className="space-y-2">
-                {scored.map((idea, idx) => (
-                  <IdeaRow
-                    key={idea.id}
-                    idea={idea}
-                    rank={idx + 1}
-                    topPick={idx === 0 && scored.length > 1}
-                    onStatus={(s) => handleStatus(idea.id, s)}
-                    onOpen={() => onOpenWorkspace(idea)}
-                    onEdit={() => setEditIdea(idea)}
-                    onScore={() => onEditScores(idea)}
-                    onDelete={() => handleDelete(idea.id)}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
+          {(() => {
+            const unscored = filtered.filter((i) => i.status === 'unscored');
+            const scored = filtered
+              .filter((i) => i.status === 'scored')
+              .sort((a, b) => (rankMap.get(a.id) ?? Infinity) - (rankMap.get(b.id) ?? Infinity));
+            return (
+              <>
+                {unscored.length > 0 && (
+                  <section>
+                    <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
+                      To Score — {unscored.length}
+                    </h2>
+                    <div className="space-y-2">{unscored.map((idea) => renderRow(idea, true))}</div>
+                  </section>
+                )}
+                {scored.length > 0 && (
+                  <section>
+                    <h2 className="text-xs font-semibold uppercase tracking-widest text-muted mb-3">
+                      Scored — {scored.length}
+                    </h2>
+                    <div className="space-y-2">{scored.map((idea) => renderRow(idea, true))}</div>
+                  </section>
+                )}
+              </>
+            );
+          })()}
         </div>
       )}
 
-      {addOpen && <LibraryAddModal onSave={handleAdd} onCancel={() => setAddOpen(false)} />}
+      {addOpen && (
+        <LibraryAddModal niches={niches} onSave={handleAdd} onCancel={() => setAddOpen(false)} />
+      )}
       {editIdea && (
-        <LibraryEditModal idea={editIdea} onSave={handleEditSave} onCancel={() => setEditIdea(null)} />
+        <LibraryEditModal
+          idea={editIdea}
+          niches={niches}
+          onSave={handleEditSave}
+          onCancel={() => setEditIdea(null)}
+        />
       )}
     </div>
   );

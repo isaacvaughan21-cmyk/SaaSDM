@@ -72,3 +72,9 @@ alter table public.ideas
   check (workflow_status in ('open', 'wip', 'on_hold'));
 alter table public.ideas
   add column if not exists workspace jsonb;
+
+-- 3b. Migration (v1.3.0): archive + niche grouping.
+alter table public.ideas
+  add column if not exists archived boolean not null default false;
+alter table public.ideas
+  add column if not exists niche text not null default '';

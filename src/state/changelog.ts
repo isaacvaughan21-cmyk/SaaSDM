@@ -11,6 +11,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.3.0',
+    date: '2026-06-08',
+    title: 'Archive & niche grouping',
+    changes: [
+      'Archive ideas you’re not pursuing without deleting them',
+      'Give each idea a niche and group the library by niche',
+      'Filter to an Archived view and restore ideas anytime',
+    ],
+  },
+  {
     version: '1.2.0',
     date: '2026-06-07',
     title: 'Planning workspace & library upgrades',
