@@ -6,10 +6,11 @@ import { WORKFLOW_LABELS } from '../state/types';
 export const WORKFLOW_DOT: Record<WorkflowStatus, string> = {
   open: '#6B6660',
   wip: '#1B1A17',
+  live: '#46423B',
   on_hold: '#B8B2A7',
 };
 
-const ORDER: WorkflowStatus[] = ['open', 'wip', 'on_hold'];
+const ORDER: WorkflowStatus[] = ['open', 'wip', 'live', 'on_hold'];
 
 type Props = {
   value: WorkflowStatus;

@@ -11,6 +11,15 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.4.0',
+    date: '2026-06-12',
+    title: 'Live ideas & simpler planning workspace',
+    changes: [
+      'Mark an idea as Live once it has shipped, and filter the library to your live ideas',
+      'Streamlined the planning workspace — feature ideas, action items, and schedule',
+    ],
+  },
+  {
     version: '1.3.0',
     date: '2026-06-08',
     title: 'Archive, niche grouping & synced Matrix',
