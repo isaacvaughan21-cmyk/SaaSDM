@@ -305,7 +305,7 @@ export function LibraryView({
   const archivedCount = ideas.filter((i) => i.archived).length;
   const toScoreCount = ideas.filter((i) => !i.archived && i.status === 'unscored').length;
 
-  const filters: Filter[] = ['all', 'open', 'wip', 'on_hold', 'archived'];
+  const filters: Filter[] = ['all', 'open', 'wip', 'live', 'on_hold', 'archived'];
   const countFor = (f: Filter) =>
     f === 'all'
       ? activeCount

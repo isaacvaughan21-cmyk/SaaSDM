@@ -10,7 +10,6 @@ import type {
 import { emptyWorkspace } from '../state/types';
 import { updateWorkspace, updateWorkflowStatus } from '../lib/libraryDb';
 import { uuid } from '../lib/uuid';
-import { MindMap } from './MindMap';
 import { WorkflowStatusPicker } from './WorkflowStatusPicker';
 
 type Props = {
@@ -72,16 +71,7 @@ export function IdeaWorkspace({ idea, onBack }: Props) {
         <p className="text-sm text-muted max-w-2xl mb-6">{idea.description}</p>
       )}
 
-      {/* Mind map */}
-      <Section title="Mind map" subtitle="Plan the shape of the idea">
-        <MindMap
-          centralLabel={idea.name}
-          nodes={ws.mindmap}
-          onChange={(mindmap) => setWs((w) => ({ ...w, mindmap }))}
-        />
-      </Section>
-
-      <div className="grid md:grid-cols-2 gap-5 mt-5">
+      <div className="grid md:grid-cols-2 gap-5">
         {/* Feature ideas */}
         <Section title="Feature ideas" subtitle="Things it could do">
           <ChecklistEditor

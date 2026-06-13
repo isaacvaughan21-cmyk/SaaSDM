@@ -49,15 +49,19 @@ create table if not exists public.ideas (
 
 alter table public.ideas enable row level security;
 
+drop policy if exists "Users can read their own ideas" on public.ideas;
 create policy "Users can read their own ideas" on public.ideas
   for select using (auth.uid() = user_id);
 
+drop policy if exists "Users can insert their own ideas" on public.ideas;
 create policy "Users can insert their own ideas" on public.ideas
   for insert with check (auth.uid() = user_id);
 
+drop policy if exists "Users can update their own ideas" on public.ideas;
 create policy "Users can update their own ideas" on public.ideas
   for update using (auth.uid() = user_id);
 
+drop policy if exists "Users can delete their own ideas" on public.ideas;
 create policy "Users can delete their own ideas" on public.ideas
   for delete using (auth.uid() = user_id);
 
@@ -69,7 +73,7 @@ alter table public.ideas
   drop constraint if exists ideas_workflow_status_check;
 alter table public.ideas
   add constraint ideas_workflow_status_check
-  check (workflow_status in ('open', 'wip', 'on_hold'));
+  check (workflow_status in ('open', 'wip', 'live', 'on_hold'));
 alter table public.ideas
   add column if not exists workspace jsonb;
 
