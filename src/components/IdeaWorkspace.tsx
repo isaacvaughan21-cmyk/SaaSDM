@@ -136,6 +136,10 @@ function ChecklistEditor({
   onChange: (items: (FeatureItem | ActionItem)[]) => void;
 }) {
   const [text, setText] = useState('');
+  const [showArchive, setShowArchive] = useState(false);
+
+  const active = items.filter((i) => !i.done);
+  const archived = items.filter((i) => i.done);
 
   const add = () => {
     const t = text.trim();
@@ -147,39 +151,45 @@ function ChecklistEditor({
     onChange(items.map((i) => (i.id === id ? { ...i, done: !i.done } : i)));
   const remove = (id: string) => onChange(items.filter((i) => i.id !== id));
 
+  const row = (item: FeatureItem | ActionItem) => (
+    <li key={item.id} className="group flex items-center gap-2.5">
+      <button
+        onClick={() => toggle(item.id)}
+        className={`w-4 h-4 shrink-0 rounded border flex items-center justify-center transition-colors ${
+          item.done ? 'bg-ink border-ink' : 'border-line hover:border-ink'
+        }`}
+        aria-label={item.done ? 'Restore to list' : 'Mark done'}
+      >
+        {item.done && (
+          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden>
+            <path d="M2 5.2l2 2 4-4.4" stroke="#fff" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        )}
+      </button>
+      <span className={`flex-1 text-sm ${item.done ? 'text-muted line-through' : 'text-ink'}`}>
+        {item.text}
+      </span>
+      <button
+        onClick={() => remove(item.id)}
+        className="w-5 h-5 flex items-center justify-center rounded text-muted opacity-0 group-hover:opacity-100 hover:text-bad transition-opacity"
+        aria-label="Remove"
+      >
+        <svg width="11" height="11" viewBox="0 0 10 10" aria-hidden>
+          <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+        </svg>
+      </button>
+    </li>
+  );
+
   return (
     <div>
       <ul className="space-y-1.5 mb-3">
-        {items.map((item) => (
-          <li key={item.id} className="group flex items-center gap-2.5">
-            <button
-              onClick={() => toggle(item.id)}
-              className={`w-4 h-4 shrink-0 rounded border flex items-center justify-center transition-colors ${
-                item.done ? 'bg-ink border-ink' : 'border-line hover:border-ink'
-              }`}
-              aria-label={item.done ? 'Mark not done' : 'Mark done'}
-            >
-              {item.done && (
-                <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden>
-                  <path d="M2 5.2l2 2 4-4.4" stroke="#fff" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              )}
-            </button>
-            <span className={`flex-1 text-sm ${item.done ? 'text-muted line-through' : 'text-ink'}`}>
-              {item.text}
-            </span>
-            <button
-              onClick={() => remove(item.id)}
-              className="w-5 h-5 flex items-center justify-center rounded text-muted opacity-0 group-hover:opacity-100 hover:text-bad transition-opacity"
-              aria-label="Remove"
-            >
-              <svg width="11" height="11" viewBox="0 0 10 10" aria-hidden>
-                <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-              </svg>
-            </button>
+        {active.map(row)}
+        {active.length === 0 && (
+          <li className="text-xs text-muted">
+            {archived.length > 0 ? 'All done — see the archive below.' : 'Nothing yet.'}
           </li>
-        ))}
-        {items.length === 0 && <li className="text-xs text-muted">Nothing yet.</li>}
+        )}
       </ul>
       <div className="flex gap-2">
         <input
@@ -197,6 +207,30 @@ function ChecklistEditor({
           Add
         </button>
       </div>
+
+      {archived.length > 0 && (
+        <div className="mt-4 pt-3 border-t border-line">
+          <button
+            onClick={() => setShowArchive((s) => !s)}
+            className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition-colors"
+            aria-expanded={showArchive}
+          >
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 10 10"
+              aria-hidden
+              className={`transition-transform ${showArchive ? 'rotate-90' : ''}`}
+            >
+              <path d="M3.5 2l4 3-4 3" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            Archive ({archived.length})
+          </button>
+          {showArchive && (
+            <ul className="space-y-1.5 mt-2.5">{archived.map(row)}</ul>
+          )}
+        </div>
+      )}
     </div>
   );
 }
