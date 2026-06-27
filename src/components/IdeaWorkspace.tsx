@@ -137,6 +137,8 @@ function ChecklistEditor({
 }) {
   const [text, setText] = useState('');
   const [showArchive, setShowArchive] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState('');
 
   const active = items.filter((i) => !i.done);
   const archived = items.filter((i) => i.done);
@@ -148,8 +150,29 @@ function ChecklistEditor({
     setText('');
   };
   const toggle = (id: string) =>
-    onChange(items.map((i) => (i.id === id ? { ...i, done: !i.done } : i)));
+    onChange(items.map((i) => (i.id === id ? { ...i, done: !i.done, wip: false } : i)));
+  const toggleWip = (id: string) =>
+    onChange(items.map((i) => (i.id === id ? { ...i, wip: !i.wip, done: false } : i)));
   const remove = (id: string) => onChange(items.filter((i) => i.id !== id));
+
+  const startEdit = (item: FeatureItem | ActionItem) => {
+    setEditingId(item.id);
+    setDraft(item.text);
+  };
+  const cancelEdit = () => {
+    setEditingId(null);
+    setDraft('');
+  };
+  const saveEdit = () => {
+    if (!editingId) return;
+    const t = draft.trim();
+    if (!t) {
+      cancelEdit();
+      return;
+    }
+    onChange(items.map((i) => (i.id === editingId ? { ...i, text: t } : i)));
+    cancelEdit();
+  };
 
   const row = (item: FeatureItem | ActionItem) => (
     <li key={item.id} className="group flex items-center gap-2.5">
@@ -166,9 +189,56 @@ function ChecklistEditor({
           </svg>
         )}
       </button>
-      <span className={`flex-1 text-sm ${item.done ? 'text-muted line-through' : 'text-ink'}`}>
-        {item.text}
-      </span>
+      {editingId === item.id ? (
+        <input
+          autoFocus
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onBlur={saveEdit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') saveEdit();
+            else if (e.key === 'Escape') cancelEdit();
+          }}
+          className="flex-1 border border-line rounded-md px-2 py-0.5 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink"
+        />
+      ) : (
+        <span
+          onDoubleClick={() => startEdit(item)}
+          className={`flex-1 text-sm ${item.done ? 'text-muted line-through' : 'text-ink'}`}
+        >
+          {item.text}
+          {item.wip && !item.done && (
+            <span className="ml-2 align-middle inline-flex items-center rounded-full border border-mid bg-mid/10 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-mid">
+              WIP
+            </span>
+          )}
+        </span>
+      )}
+      {editingId !== item.id && !item.done && (
+        <button
+          onClick={() => toggleWip(item.id)}
+          className={`px-1.5 h-5 flex items-center rounded text-[10px] font-semibold uppercase tracking-wide transition-opacity ${
+            item.wip
+              ? 'text-mid opacity-100'
+              : 'text-muted opacity-0 group-hover:opacity-100 hover:text-mid'
+          }`}
+          aria-label={item.wip ? 'Clear work-in-progress' : 'Mark work-in-progress'}
+          aria-pressed={!!item.wip}
+        >
+          WIP
+        </button>
+      )}
+      {editingId !== item.id && (
+        <button
+          onClick={() => startEdit(item)}
+          className="w-5 h-5 flex items-center justify-center rounded text-muted opacity-0 group-hover:opacity-100 hover:text-ink transition-opacity"
+          aria-label="Edit"
+        >
+          <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden>
+            <path d="M8.2 1.8l2 2L4 10H2v-2l6.2-6.2z" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      )}
       <button
         onClick={() => remove(item.id)}
         className="w-5 h-5 flex items-center justify-center rounded text-muted opacity-0 group-hover:opacity-100 hover:text-bad transition-opacity"
