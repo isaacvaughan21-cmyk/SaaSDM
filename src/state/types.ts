@@ -56,9 +56,23 @@ export const WORKFLOW_LABELS: Record<WorkflowStatus, string> = {
 
 // --- Idea workspace (planning dashboard) ---
 
-export type FeatureItem = { id: string; text: string; done: boolean; wip?: boolean };
+/**
+ * One row in a checklist (feature ideas / action items).
+ * `done` archives it; `later` parks it without marking it complete;
+ * `category` groups feature ideas under a heading.
+ */
+export type ChecklistItem = {
+  id: string;
+  text: string;
+  done: boolean;
+  wip?: boolean;
+  later?: boolean;
+  category?: string;
+};
+
+export type FeatureItem = ChecklistItem;
+export type ActionItem = ChecklistItem;
 export type ScheduleItem = { id: string; date: string; label: string };
-export type ActionItem = { id: string; text: string; done: boolean; wip?: boolean };
 
 export type IdeaWorkspace = {
   features: FeatureItem[];

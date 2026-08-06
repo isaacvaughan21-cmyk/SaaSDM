@@ -3,9 +3,8 @@ import type {
   LibraryIdea,
   IdeaWorkspace as Workspace,
   WorkflowStatus,
-  FeatureItem,
+  ChecklistItem,
   ScheduleItem,
-  ActionItem,
 } from '../state/types';
 import { emptyWorkspace } from '../state/types';
 import { updateWorkspace, updateWorkflowStatus } from '../lib/libraryDb';
@@ -77,6 +76,7 @@ export function IdeaWorkspace({ idea, onBack }: Props) {
           <ChecklistEditor
             items={ws.features}
             placeholder="e.g. Slack integration"
+            categorised
             onChange={(features) => setWs((w) => ({ ...w, features }))}
           />
         </Section>
@@ -126,42 +126,64 @@ function Section({
 
 /* ---- Checklist editor (features + action items) ---- */
 
+const cleanCategory = (c?: string) => (c ?? '').trim();
+
 function ChecklistEditor({
   items,
   placeholder,
+  categorised = false,
   onChange,
 }: {
-  items: (FeatureItem | ActionItem)[];
+  items: ChecklistItem[];
   placeholder: string;
-  onChange: (items: (FeatureItem | ActionItem)[]) => void;
+  /** Feature ideas group under category headings; action items don't. */
+  categorised?: boolean;
+  onChange: (items: ChecklistItem[]) => void;
 }) {
   const [text, setText] = useState('');
+  const [addCategory, setAddCategory] = useState('');
+  const [showLater, setShowLater] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
+  const [draftCategory, setDraftCategory] = useState('');
 
-  const active = items.filter((i) => !i.done);
+  const active = items.filter((i) => !i.done && !i.later);
+  const later = items.filter((i) => !i.done && i.later);
   const archived = items.filter((i) => i.done);
+
+  // every category in use, for the pickers
+  const categories = Array.from(
+    new Set(items.map((i) => cleanCategory(i.category)).filter(Boolean)),
+  ).sort((a, b) => a.localeCompare(b));
 
   const add = () => {
     const t = text.trim();
     if (!t) return;
-    onChange([...items, { id: uuid(), text: t, done: false }]);
+    const c = categorised ? addCategory.trim() : '';
+    onChange([...items, { id: uuid(), text: t, done: false, ...(c ? { category: c } : {}) }]);
     setText('');
+    // keep the category selected so several ideas can be added to it in a row
   };
   const toggle = (id: string) =>
-    onChange(items.map((i) => (i.id === id ? { ...i, done: !i.done, wip: false } : i)));
+    onChange(
+      items.map((i) => (i.id === id ? { ...i, done: !i.done, wip: false, later: false } : i)),
+    );
   const toggleWip = (id: string) =>
     onChange(items.map((i) => (i.id === id ? { ...i, wip: !i.wip, done: false } : i)));
+  const toggleLater = (id: string) =>
+    onChange(items.map((i) => (i.id === id ? { ...i, later: !i.later, wip: false } : i)));
   const remove = (id: string) => onChange(items.filter((i) => i.id !== id));
 
-  const startEdit = (item: FeatureItem | ActionItem) => {
+  const startEdit = (item: ChecklistItem) => {
     setEditingId(item.id);
     setDraft(item.text);
+    setDraftCategory(cleanCategory(item.category));
   };
   const cancelEdit = () => {
     setEditingId(null);
     setDraft('');
+    setDraftCategory('');
   };
   const saveEdit = () => {
     if (!editingId) return;
@@ -170,11 +192,18 @@ function ChecklistEditor({
       cancelEdit();
       return;
     }
-    onChange(items.map((i) => (i.id === editingId ? { ...i, text: t } : i)));
+    const c = draftCategory.trim();
+    onChange(
+      items.map((i) =>
+        i.id === editingId
+          ? { ...i, text: t, ...(categorised ? { category: c || undefined } : {}) }
+          : i,
+      ),
+    );
     cancelEdit();
   };
 
-  const row = (item: FeatureItem | ActionItem) => (
+  const row = (item: ChecklistItem) => (
     <li key={item.id} className="group flex items-center gap-2.5">
       <button
         onClick={() => toggle(item.id)}
@@ -190,31 +219,46 @@ function ChecklistEditor({
         )}
       </button>
       {editingId === item.id ? (
-        <input
-          autoFocus
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={saveEdit}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') saveEdit();
-            else if (e.key === 'Escape') cancelEdit();
+        <div
+          className="flex-1 flex flex-wrap items-center gap-1.5"
+          onBlur={(e) => {
+            // stay in edit mode while focus moves between the text and category fields
+            if (e.relatedTarget instanceof Node && e.currentTarget.contains(e.relatedTarget)) return;
+            saveEdit();
           }}
-          className="flex-1 border border-line rounded-md px-2 py-0.5 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink"
-        />
+        >
+          <input
+            autoFocus
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') saveEdit();
+              else if (e.key === 'Escape') cancelEdit();
+            }}
+            className="flex-1 min-w-[7rem] border border-line rounded-md px-2 py-0.5 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink"
+          />
+          {categorised && (
+            <CategoryPicker
+              value={draftCategory}
+              categories={categories}
+              onChange={setDraftCategory}
+            />
+          )}
+        </div>
       ) : (
         <span
           onDoubleClick={() => startEdit(item)}
           className={`flex-1 text-sm ${item.done ? 'text-muted line-through' : 'text-ink'}`}
         >
           {item.text}
-          {item.wip && !item.done && (
+          {item.wip && !item.done && !item.later && (
             <span className="ml-2 align-middle inline-flex items-center rounded-full border border-mid bg-mid/10 px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-mid">
               WIP
             </span>
           )}
         </span>
       )}
-      {editingId !== item.id && !item.done && (
+      {editingId !== item.id && !item.done && !item.later && (
         <button
           onClick={() => toggleWip(item.id)}
           className={`px-1.5 h-5 flex items-center rounded text-[10px] font-semibold uppercase tracking-wide transition-opacity ${
@@ -226,6 +270,24 @@ function ChecklistEditor({
           aria-pressed={!!item.wip}
         >
           WIP
+        </button>
+      )}
+      {editingId !== item.id && !item.done && (
+        <button
+          onClick={() => toggleLater(item.id)}
+          title={item.later ? 'Move back to the list' : 'Do later'}
+          className={`w-5 h-5 flex items-center justify-center rounded transition-opacity ${
+            item.later
+              ? 'text-ink opacity-100'
+              : 'text-muted opacity-0 group-hover:opacity-100 hover:text-ink'
+          }`}
+          aria-label={item.later ? 'Move back to the list' : 'Do later'}
+          aria-pressed={!!item.later}
+        >
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
+            <circle cx="6" cy="6" r="4.4" stroke="currentColor" strokeWidth="1.2" fill="none" />
+            <path d="M6 3.6V6l1.8 1.1" stroke="currentColor" strokeWidth="1.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
       )}
       {editingId !== item.id && (
@@ -251,23 +313,56 @@ function ChecklistEditor({
     </li>
   );
 
+  // active items: flat for action items, grouped under category headings for features
+  const uncategorised = active.filter((i) => !cleanCategory(i.category));
+  const activeCategories = Array.from(
+    new Set(active.map((i) => cleanCategory(i.category)).filter(Boolean)),
+  ).sort((a, b) => a.localeCompare(b));
+
+  const emptyMessage =
+    later.length > 0
+      ? 'Nothing active — see Later below.'
+      : archived.length > 0
+        ? 'All done — see the archive below.'
+        : 'Nothing yet.';
+
   return (
     <div>
-      <ul className="space-y-1.5 mb-3">
-        {active.map(row)}
-        {active.length === 0 && (
-          <li className="text-xs text-muted">
-            {archived.length > 0 ? 'All done — see the archive below.' : 'Nothing yet.'}
-          </li>
+      {active.length === 0 ? (
+        <p className="text-xs text-muted mb-3">{emptyMessage}</p>
+      ) : !categorised || activeCategories.length === 0 ? (
+        <ul className="space-y-1.5 mb-3">{active.map(row)}</ul>
+      ) : (
+        <div className="space-y-3.5 mb-3">
+          {uncategorised.length > 0 && (
+            <ul className="space-y-1.5">{uncategorised.map(row)}</ul>
+          )}
+          {activeCategories.map((c) => (
+            <div key={c}>
+              <h3 className="flex items-baseline gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted mb-1.5">
+                {c}
+                <span className="tabular-nums font-normal">
+                  ({active.filter((i) => cleanCategory(i.category) === c).length})
+                </span>
+              </h3>
+              <ul className="space-y-1.5 border-l border-line pl-2.5">
+                {active.filter((i) => cleanCategory(i.category) === c).map(row)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-2">
+        {categorised && (
+          <CategoryPicker value={addCategory} categories={categories} onChange={setAddCategory} />
         )}
-      </ul>
-      <div className="flex gap-2">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && add()}
           placeholder={placeholder}
-          className="flex-1 border border-line rounded-lg px-3 py-1.5 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink placeholder:text-muted"
+          className="flex-1 min-w-[8rem] border border-line rounded-lg px-3 py-1.5 text-sm text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink placeholder:text-muted"
         />
         <button
           onClick={add}
@@ -278,30 +373,129 @@ function ChecklistEditor({
         </button>
       </div>
 
+      {later.length > 0 && (
+        <Collapsible
+          label={`Later (${later.length})`}
+          open={showLater}
+          onToggle={() => setShowLater((s) => !s)}
+        >
+          <ul className="space-y-1.5 mt-2.5">{later.map(row)}</ul>
+        </Collapsible>
+      )}
+
       {archived.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-line">
-          <button
-            onClick={() => setShowArchive((s) => !s)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition-colors"
-            aria-expanded={showArchive}
-          >
-            <svg
-              width="10"
-              height="10"
-              viewBox="0 0 10 10"
-              aria-hidden
-              className={`transition-transform ${showArchive ? 'rotate-90' : ''}`}
-            >
-              <path d="M3.5 2l4 3-4 3" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            Archive ({archived.length})
-          </button>
-          {showArchive && (
-            <ul className="space-y-1.5 mt-2.5">{archived.map(row)}</ul>
-          )}
-        </div>
+        <Collapsible
+          label={`Archive (${archived.length})`}
+          open={showArchive}
+          onToggle={() => setShowArchive((s) => !s)}
+        >
+          <ul className="space-y-1.5 mt-2.5">{archived.map(row)}</ul>
+        </Collapsible>
       )}
     </div>
+  );
+}
+
+function Collapsible({
+  label,
+  open,
+  onToggle,
+  children,
+}: {
+  label: string;
+  open: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mt-4 pt-3 border-t border-line">
+      <button
+        onClick={onToggle}
+        className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition-colors"
+        aria-expanded={open}
+      >
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          aria-hidden
+          className={`transition-transform ${open ? 'rotate-90' : ''}`}
+        >
+          <path d="M3.5 2l4 3-4 3" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        {label}
+      </button>
+      {open && children}
+    </div>
+  );
+}
+
+/* ---- Category picker (feature ideas) ---- */
+
+function CategoryPicker({
+  value,
+  categories,
+  onChange,
+}: {
+  value: string;
+  categories: string[];
+  onChange: (v: string) => void;
+}) {
+  const [adding, setAdding] = useState(categories.length === 0);
+
+  const cls =
+    'w-32 shrink-0 border border-line rounded-lg px-2 py-1.5 text-xs text-ink bg-paper focus:outline-none focus:ring-1 focus:ring-ink placeholder:text-muted';
+
+  if (adding) {
+    return (
+      <div className="flex items-center gap-1">
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="New category"
+          className={cls}
+        />
+        {categories.length > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              setAdding(false);
+              onChange('');
+            }}
+            className="w-5 h-5 flex items-center justify-center rounded text-muted hover:text-ink transition-colors"
+            aria-label="Cancel new category"
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden>
+              <path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+            </svg>
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <select
+      value={categories.includes(value) ? value : ''}
+      onChange={(e) => {
+        if (e.target.value === '__new__') {
+          setAdding(true);
+          onChange('');
+        } else {
+          onChange(e.target.value);
+        }
+      }}
+      className={cls}
+      aria-label="Category"
+    >
+      <option value="">No category</option>
+      {categories.map((c) => (
+        <option key={c} value={c}>
+          {c}
+        </option>
+      ))}
+      <option value="__new__">+ New category…</option>
+    </select>
   );
 }
 
