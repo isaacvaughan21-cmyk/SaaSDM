@@ -11,6 +11,16 @@ export type ChangelogEntry = {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '1.5.0',
+    date: '2026-08-06',
+    title: 'Sharper planning lists',
+    changes: [
+      'Park anything for later — it moves to its own Later list without being marked done',
+      'Group feature ideas into categories and see them under category headings',
+      'Rename an item or move it to another category by double-clicking it',
+    ],
+  },
+  {
     version: '1.4.0',
     date: '2026-06-12',
     title: 'Live ideas & simpler planning workspace',
